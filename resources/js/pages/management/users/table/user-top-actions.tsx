@@ -1,0 +1,129 @@
+import { Plus, Trash2Icon } from 'lucide-react';
+import React from 'react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogMedia,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { UserFormDialog } from '../form/user-form-dialog';
+
+type UserTopActionsProps = {
+    hasSelection: boolean;
+    selectedCount: number;
+    bulkDeleting: boolean;
+    onBulkDelete: () => void;
+    onCreated: () => void;
+};
+
+type BulkActionsProps = {
+    hasSelection: boolean;
+    selectedCount: number;
+    bulkDeleting: boolean;
+    onBulkDelete: () => void;
+};
+
+export function UserTopActions({
+    hasSelection,
+    selectedCount,
+    bulkDeleting,
+    onBulkDelete,
+    onCreated,
+}: UserTopActionsProps) {
+    return (
+        <div className="flex w-full flex-col gap-3 md:flex-row md:items-center">
+            {/* <div className="flex items-center gap-2">
+                {hasSelection && (
+                    <Badge variant="secondary" className="text-[11px] font-medium">
+                        {selectedCount}
+                        {' '}
+                        user terpilih
+                    </Badge>
+                )}
+            </div> */}
+            <div className="flex w-full flex-col md:flex-row md:items-center items-center justify-end gap-2 ">
+                <BulkActions
+                    hasSelection={hasSelection}
+                    selectedCount={selectedCount}
+                    bulkDeleting={bulkDeleting}
+                    onBulkDelete={onBulkDelete}
+                />
+                <UserFormDialog
+                    mode="create"
+                    onSuccess={onCreated}
+                    trigger={
+                        <Button
+                            size="sm"
+                            className="w-full md:w-auto"
+                        >
+                            <Plus className="mr-2 size-4" />
+                            Tambah user
+                        </Button>
+                    }
+                />
+            </div>
+        </div>
+    );
+}
+
+function BulkActions({ hasSelection, selectedCount, bulkDeleting, onBulkDelete }: BulkActionsProps) {
+    if (!hasSelection) {
+        return null;
+    }
+
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-8 px-3 w-full md:w-auto"
+                    disabled={bulkDeleting}
+                >
+                    {bulkDeleting ? (
+                        <Spinner className="mr-2 size-4" />
+                    ) : (
+                        <Trash2Icon className="mr-2 size-4" />
+                    )}
+                    Hapus terpilih ({selectedCount})
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent size="sm">
+                <AlertDialogHeader>
+                    <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                        <Trash2Icon />
+                    </AlertDialogMedia>
+                    <AlertDialogTitle>Hapus user terpilih?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Sebanyak
+                        {' '}
+                        {selectedCount}
+                        {' '}
+                        user akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={bulkDeleting}>
+                        Batal
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        variant="destructive"
+                        disabled={bulkDeleting}
+                        onClick={onBulkDelete}
+                    >
+                        {bulkDeleting && <Spinner className="mr-2 size-4" />}
+                        Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}
