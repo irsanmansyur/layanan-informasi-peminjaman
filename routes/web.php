@@ -29,7 +29,6 @@ Route::middleware('auth', 'verified')->group(function () {
 
             Route::post('/', 'store')->name('users.store');
             Route::delete('/bulk', 'bulkDestroy')->name('users.bulk-destroy');
-            Route::get('/{user}', 'show')->name('users.show');
             Route::put('/{user}', 'update')->name('users.update');
             Route::delete('/{user}', 'destroy')->name('users.destroy');
         });
@@ -40,7 +39,6 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::get('/fetch-data', 'fetchData')->name('permissions.fetch-data');
             Route::get('/permission-list', 'permissionList')->name('permissions.list');
             Route::post('/', 'store')->name('permissions.store');
-            Route::get('/{permission}', 'show')->name('permissions.show');
             Route::put('/{permission}', 'update')->name('permissions.update');
             Route::delete('/{permission}', 'destroy')->name('permissions.destroy');
         });
