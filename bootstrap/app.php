@@ -52,6 +52,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
+
             if ($request->expectsJson()) {
                 return null;
             }
