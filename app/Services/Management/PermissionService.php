@@ -2,8 +2,8 @@
 
 namespace App\Services\Management;
 
+use App\Models\Permission;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Permission;
 
 class PermissionService
 {

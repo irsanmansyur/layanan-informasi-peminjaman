@@ -399,7 +399,7 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                                             value={selectedRoles}
                                             onValueChange={setSelectedRoles}
                                             placeholder="Pilih satu atau lebih role"
-                                            maxCount={3}
+                                            maxCount={5}
                                             className="justify-between"
                                         >
                                             <ShieldCheck className="mr-2 size-4" />

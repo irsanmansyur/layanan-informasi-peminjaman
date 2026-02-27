@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { usePermissions } from '@/hooks/use-permissions';
 import { PermissionFormDialog } from '../form/permission-form-dialog';
 
 type PermissionTopActionsProps = {
@@ -7,6 +8,14 @@ type PermissionTopActionsProps = {
 };
 
 export function PermissionTopActions({ onCreated }: PermissionTopActionsProps) {
+    const { hasPermission } = usePermissions();
+
+    const canCreate = hasPermission('permissions.create');
+
+    if (!canCreate) {
+        return null;
+    }
+
     return (
         <div className="flex w-full justify-end">
             <PermissionFormDialog
@@ -22,4 +31,3 @@ export function PermissionTopActions({ onCreated }: PermissionTopActionsProps) {
         </div>
     );
 }
-

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { usePermissions } from '@/hooks/use-permissions';
 import { UserFormDialog } from '../form/user-form-dialog';
 
 type UserTopActionsProps = {
@@ -38,44 +39,53 @@ export function UserTopActions({
     onBulkDelete,
     onCreated,
 }: UserTopActionsProps) {
+    const { hasPermission } = usePermissions();
+
+    const canCreate = hasPermission('users.create');
+    const canBulkDelete = hasPermission('users.delete');
+
     return (
         <div className="flex w-full flex-col gap-3 md:flex-row md:items-center">
-            {/* <div className="flex items-center gap-2">
-                {hasSelection && (
-                    <Badge variant="secondary" className="text-[11px] font-medium">
-                        {selectedCount}
-                        {' '}
-                        user terpilih
-                    </Badge>
-                )}
-            </div> */}
             <div className="flex w-full flex-col md:flex-row md:items-center items-center justify-end gap-2 ">
                 <BulkActions
                     hasSelection={hasSelection}
                     selectedCount={selectedCount}
                     bulkDeleting={bulkDeleting}
                     onBulkDelete={onBulkDelete}
+                    canBulkDelete={canBulkDelete}
                 />
-                <UserFormDialog
-                    mode="create"
-                    onSuccess={onCreated}
-                    trigger={
-                        <Button
-                            size="sm"
-                            className="w-full md:w-auto"
-                        >
-                            <Plus className="mr-2 size-4" />
-                            Tambah user
-                        </Button>
-                    }
-                />
+                {canCreate && (
+                    <UserFormDialog
+                        mode="create"
+                        onSuccess={onCreated}
+                        trigger={
+                            <Button
+                                size="sm"
+                                className="w-full md:w-auto"
+                            >
+                                <Plus className="mr-2 size-4" />
+                                Tambah user
+                            </Button>
+                        }
+                    />
+                )}
             </div>
         </div>
     );
 }
 
-function BulkActions({ hasSelection, selectedCount, bulkDeleting, onBulkDelete }: BulkActionsProps) {
-    if (!hasSelection) {
+type BulkActionsWithPermissionProps = BulkActionsProps & {
+    canBulkDelete: boolean;
+};
+
+function BulkActions({
+    hasSelection,
+    selectedCount,
+    bulkDeleting,
+    onBulkDelete,
+    canBulkDelete,
+}: BulkActionsWithPermissionProps) {
+    if (!hasSelection || !canBulkDelete) {
         return null;
     }
 

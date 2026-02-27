@@ -4,7 +4,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import {
     CheckIcon,
-    XCircle,
     ChevronDown,
     XIcon,
     WandSparkles,
@@ -219,10 +218,9 @@ export const MultiSelect = React.forwardRef<
                         ref={ref}
                         {...props}
                         onClick={handleTogglePopover}
-                        variant="outline"
+                        variant="link"
                         className={cn(
-                            // "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto",
-                            "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between hover:bg-background [&_svg]:pointer-events-auto ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-4 focus:ring-primary focus:border-primary focus-visible:ring-primary/30",
+                            "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between hover:bg-background [&_svg]:pointer-events-auto ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-4 focus:ring-primary focus:border-primary focus-visible:ring-primary/30 hover:no-underline data-[state=open]:ring-3 data-[state=open]:border-primary data-[state=open]:ring-primary/30",
                             className
                         )}
                     >
@@ -252,11 +250,11 @@ export const MultiSelect = React.forwardRef<
                                                     }}
                                                 >
                                                     {IconComponent && (
-                                                        <IconComponent className="w-4 h-4 mr-2" />
+                                                        <IconComponent className="size-4 mr-2" />
                                                     )}
                                                     {option?.label}
-                                                    <XCircle
-                                                        className="w-4 h-4 ml-2 cursor-pointer"
+                                                    <XIcon
+                                                        className="size-4 ml-2 cursor-pointer"
                                                         onClick={(event) => {
                                                             event.stopPropagation();
                                                             toggleOption(value);
@@ -280,8 +278,8 @@ export const MultiSelect = React.forwardRef<
                                         >
                                             {`+ ${selectedValues.length - maxCount
                                                 } more`}
-                                            <XCircle
-                                                className="w-4 h-4 ml-2 cursor-pointer"
+                                            <XIcon
+                                                className="size-4 ml-2 cursor-pointer"
                                                 onClick={(event) => {
                                                     event.stopPropagation();
                                                     clearExtraOptions();
@@ -386,7 +384,7 @@ export const MultiSelect = React.forwardRef<
                                                 />
                                             </div>
                                             {option.icon && (
-                                                <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                                                <option.icon className="size-4 mr-2 text-muted-foreground" />
                                             )}
                                             <span>{option.label}</span>
                                         </CommandItem>

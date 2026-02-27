@@ -1,5 +1,6 @@
 import { DataTable } from '@/components/datatables';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePermissions } from '@/hooks/use-permissions';
 import rolesRoutes from '@/routes/roles';
 import { useRoleFilters, useRolesTableState } from '../hooks/role-hooks';
 import type { ManagementRole } from '../types/role-types';
@@ -10,6 +11,12 @@ import { RoleTopActions } from './role-top-actions';
 export default function RoleTable() {
     const { filters } = useRoleFilters();
     const { tableKey, deletingId, deleteRole, reloadTable } = useRolesTableState();
+
+    const { hasPermission } = usePermissions();
+
+    const canEditRole = hasPermission('roles.update');
+    const canDeleteRole = hasPermission('roles.delete');
+    const hasActionsAccess = canEditRole || canDeleteRole;
 
     return (
         <Card>
@@ -36,18 +43,26 @@ export default function RoleTable() {
                     }}
                     topContent={<RoleTopActions onCreated={reloadTable} />}
                     searchableColumns={roleSearchableColumns}
-                    actions={(role) => (
-                        <RoleRowActions
-                            role={role}
-                            deletingId={deletingId}
-                            onDelete={deleteRole}
-                            onUpdated={reloadTable}
-                        />
-                    )}
-                    actionColumn={{
-                        header: 'Actions',
-                        className: 'w-[140px]',
-                    }}
+                    actions={
+                        hasActionsAccess
+                            ? (role) => (
+                                  <RoleRowActions
+                                      role={role}
+                                      deletingId={deletingId}
+                                      onDelete={deleteRole}
+                                      onUpdated={reloadTable}
+                                  />
+                              )
+                            : undefined
+                    }
+                    actionColumn={
+                        hasActionsAccess
+                            ? {
+                                  header: 'Actions',
+                                  className: 'w-[140px]',
+                              }
+                            : undefined
+                    }
                     tableClassName="min-w-[720px]"
                 />
             </CardContent>

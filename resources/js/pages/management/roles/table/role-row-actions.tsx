@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { usePermissions } from '@/hooks/use-permissions';
 import { RoleFormDialog } from '../form/role-form-dialog';
 import type { ManagementRole } from '../types/role-types';
 
@@ -29,62 +30,75 @@ export function RoleRowActions({
     onDelete,
     onUpdated,
 }: RoleRowActionsProps) {
+    const { hasPermission } = usePermissions();
+
+    const canEdit = hasPermission('roles.update');
+    const canDelete = hasPermission('roles.delete');
+
+    if (!canEdit && !canDelete) {
+        return null;
+    }
+
     return (
         <div className="flex items-center justify-center gap-2">
-            <RoleFormDialog
-                mode="edit"
-                role={role}
-                onSuccess={onUpdated}
-                trigger={
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        aria-label={`Edit ${role.name}`}
-                    >
-                        <span className="sr-only">Edit {role.name}</span>
-                        <PencilIcon className="size-4" />
-                    </Button>
-                }
-            />
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button
-                        variant="destructive"
-                        size="icon"
-                        aria-label={`Delete ${role.name}`}
-                        disabled={deletingId === role.id}
-                    >
-                        {deletingId === role.id ? (
-                            <Spinner className="size-4" />
-                        ) : (
-                            <Trash2Icon className="size-4" />
-                        )}
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent size="sm">
-                    <AlertDialogHeader>
-                        <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                            <Trash2Icon />
-                        </AlertDialogMedia>
-                        <AlertDialogTitle>Hapus role?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Role &quot;
-                            {role.name}
-                            &quot; akan dihapus secara permanen. Tindakan ini tidak
-                            dapat dibatalkan.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction
-                            variant="destructive"
-                            onClick={() => onDelete(role)}
+            {canEdit && (
+                <RoleFormDialog
+                    mode="edit"
+                    role={role}
+                    onSuccess={onUpdated}
+                    trigger={
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            aria-label={`Edit ${role.name}`}
                         >
-                            Hapus
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                            <span className="sr-only">Edit {role.name}</span>
+                            <PencilIcon className="size-4" />
+                        </Button>
+                    }
+                />
+            )}
+            {canDelete && (
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant="destructive"
+                            size="icon"
+                            aria-label={`Delete ${role.name}`}
+                            disabled={deletingId === role.id}
+                        >
+                            {deletingId === role.id ? (
+                                <Spinner className="size-4" />
+                            ) : (
+                                <Trash2Icon className="size-4" />
+                            )}
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent size="sm">
+                        <AlertDialogHeader>
+                            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                                <Trash2Icon />
+                            </AlertDialogMedia>
+                            <AlertDialogTitle>Hapus role?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Role &quot;
+                                {role.name}
+                                &quot; akan dihapus secara permanen. Tindakan ini tidak
+                                dapat dibatalkan.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                                variant="destructive"
+                                onClick={() => onDelete(role)}
+                            >
+                                Hapus
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
         </div>
     );
 }

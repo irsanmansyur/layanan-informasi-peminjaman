@@ -3,6 +3,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
+import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/sonner';
 import { initializeTheme } from './hooks/use-appearance';
 
@@ -20,10 +21,10 @@ createInertiaApp({
 
         root.render(
             <StrictMode>
-                <>
+                <ErrorBoundary>
                     <App {...props} />
                     <Toaster position="top-right" richColors />
-                </>
+                </ErrorBoundary>
             </StrictMode>,
         );
     },

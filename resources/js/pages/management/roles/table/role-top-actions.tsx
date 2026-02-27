@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { usePermissions } from '@/hooks/use-permissions';
 import { RoleFormDialog } from '../form/role-form-dialog';
 
 type RoleTopActionsProps = {
@@ -7,6 +8,14 @@ type RoleTopActionsProps = {
 };
 
 export function RoleTopActions({ onCreated }: RoleTopActionsProps) {
+    const { hasPermission } = usePermissions();
+
+    const canCreate = hasPermission('roles.create');
+
+    if (!canCreate) {
+        return null;
+    }
+
     return (
         <div className="flex w-full justify-end">
             <RoleFormDialog
@@ -22,4 +31,3 @@ export function RoleTopActions({ onCreated }: RoleTopActionsProps) {
         </div>
     );
 }
-

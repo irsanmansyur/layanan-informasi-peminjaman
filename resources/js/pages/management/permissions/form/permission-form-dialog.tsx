@@ -142,8 +142,8 @@ export function PermissionFormDialog({
 
                 <Form
                     {...(isEdit && permission
-                        ? permissionsRoutes.update.form(permission.id)
-                        : permissionsRoutes.store.form())}
+                    ? permissionsRoutes.update.form(String(permission.id))
+                    : permissionsRoutes.store.form())}
                     options={{
                         preserveScroll: true,
                     }}

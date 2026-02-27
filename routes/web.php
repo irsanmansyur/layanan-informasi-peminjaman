@@ -1,11 +1,12 @@
 <?php
 
-use Inertia\Inertia;
-use Laravel\Fortify\Features;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Management\ActivityLogController;
 use App\Http\Controllers\Management\PermissionsController;
 use App\Http\Controllers\Management\RolesController;
 use App\Http\Controllers\Management\UsersController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -52,6 +53,12 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::get('/{role}', 'show')->name('roles.show');
             Route::put('/{role}', 'update')->name('roles.update');
             Route::delete('/{role}', 'destroy')->name('roles.destroy');
+        });
+
+        // Activity Logs
+        Route::prefix('activity-logs')->controller(ActivityLogController::class)->group(function () {
+            Route::get('/', 'index')->name('activity-logs.index');
+            Route::get('/fetch-data', 'fetchData')->name('activity-logs.fetch-data');
         });
     });
 

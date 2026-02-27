@@ -2,6 +2,7 @@ import React from 'react';
 import { DataTable } from '@/components/datatables';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { usePermissions } from '@/hooks/use-permissions';
 import permissionsRoutes from '@/routes/permissions';
 import { usePermissionFilters, usePermissionsTableState } from '../hooks/permission-hooks';
 import type { ManagementPermission } from '../types/permission-types';
@@ -12,6 +13,12 @@ import { PermissionTopActions } from './permission-top-actions';
 export default function PermissionTable() {
     const { filters, loading: filtersLoading } = usePermissionFilters();
     const { tableKey, deletingId, deletePermission, reloadTable } = usePermissionsTableState();
+
+    const { hasPermission } = usePermissions();
+
+    const canEditPermission = hasPermission('permissions.update');
+    const canDeletePermission = hasPermission('permissions.delete');
+    const hasActionsAccess = canEditPermission || canDeletePermission;
 
     return (
         <Card>
@@ -47,22 +54,29 @@ export default function PermissionTable() {
                         />
                     }
                     searchableColumns={permissionSearchableColumns}
-                    actions={(permission) => (
-                        <PermissionRowActions
-                            permission={permission}
-                            deletingId={deletingId}
-                            onDelete={deletePermission}
-                            onUpdated={reloadTable}
-                        />
-                    )}
-                    actionColumn={{
-                        header: 'Actions',
-                        className: 'w-[140px]',
-                    }}
+                    actions={
+                        hasActionsAccess
+                            ? (permission) => (
+                                  <PermissionRowActions
+                                      permission={permission}
+                                      deletingId={deletingId}
+                                      onDelete={deletePermission}
+                                      onUpdated={reloadTable}
+                                  />
+                              )
+                            : undefined
+                    }
+                    actionColumn={
+                        hasActionsAccess
+                            ? {
+                                  header: 'Actions',
+                                  className: 'w-[140px]',
+                              }
+                            : undefined
+                    }
                     tableClassName="min-w-[720px]"
                 />
             </CardContent>
         </Card>
     );
 }
-

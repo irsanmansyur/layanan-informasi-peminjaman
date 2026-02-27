@@ -52,7 +52,7 @@ export function useRolesTableState(): UseRolesTableStateResult {
             setActionError(null);
             setDeletingId(role.id);
 
-            router.delete(rolesRoutes.destroy(role.id).url, {
+            router.delete(rolesRoutes.destroy(String(role.id)).url, {
                 preserveScroll: true,
                 onSuccess: () => {
                     reloadTable();

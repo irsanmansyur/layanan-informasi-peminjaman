@@ -1,5 +1,4 @@
 import { Link } from '@inertiajs/react';
-import { FolderTree, LayoutGrid } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import {
     Sidebar,
@@ -9,47 +8,14 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { mainNavItems } from '@/config/navigation';
+import { useFilteredMainNavItems } from '@/hooks/use-filtered-main-nav-items';
 import { dashboard } from '@/routes';
-import permissions from '@/routes/permissions';
-import roles from '@/routes/roles';
-import users from '@/routes/users';
-import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Management',
-        href: '#',
-        icon: FolderTree,
-        children: [
-            {
-                title: 'Users',
-                href: users.index(),
-            },
-            {
-                title: 'Access Control',
-                href: '#',
-                children: [
-                    {
-                        title: 'Permissions',
-                        href: permissions.index(),
-                    },
-                    {
-                        title: 'Roles',
-                        href: roles.index(),
-                    },
-                ],
-            },
-        ],
-    },
-];
-
 export function AppSidebar() {
+    const filteredMainNavItems = useFilteredMainNavItems(mainNavItems);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -65,7 +31,9 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                {filteredMainNavItems.map((group) => (
+                    <NavMain key={group.title} group={group} />
+                ))}
             </SidebarContent>
         </Sidebar>
     );

@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     Collapsible,
     CollapsibleContent,
@@ -30,10 +30,10 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl, type IsCurrentUrlFn } from '@/hooks/use-current-url';
-import type { NavItem } from '@/types';
+import type { MainNavGroup, NavItem } from '@/types';
 
 type NavMainProps = {
-    items: NavItem[];
+    group: MainNavGroup;
 };
 
 type NavItemWithDepth = NavItem & {
@@ -319,16 +319,23 @@ function NavItemNode({
     );
 }
 
-export function NavMain({ items = [] }: NavMainProps) {
+export function NavMain({ group }: NavMainProps) {
     const { currentUrl, isCurrentUrl } = useCurrentUrl();
     const { state: sidebarState, isMobile } = useSidebar();
 
-    const [expandedKeys, setExpandedKeys] = useState<Set<string>>(
-        () => getExpandedKeysForCurrentUrl(items, isCurrentUrl, currentUrl),
+    const items = useMemo(
+        () => group.items ?? [],
+        [group.items],
+    );
+
+    const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() =>
+        getExpandedKeysForCurrentUrl(items, isCurrentUrl, currentUrl),
     );
 
     useEffect(() => {
-        setExpandedKeys(getExpandedKeysForCurrentUrl(items, isCurrentUrl, currentUrl));
+        setExpandedKeys(
+            getExpandedKeysForCurrentUrl(items, isCurrentUrl, currentUrl),
+        );
     }, [items, currentUrl, isCurrentUrl]);
 
     const toggleKey = (key: string) => {
@@ -345,9 +352,9 @@ export function NavMain({ items = [] }: NavMainProps) {
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => (
+                {items.map((item: NavItemWithDepth) => (
                     <NavItemNode
                         key={item.title}
                         item={item}

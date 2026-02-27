@@ -5,7 +5,7 @@ namespace App\Services\Management;
 use App\Services\DataTable\DataTableService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
+use App\Models\Permission;
 
 class PermissionDataTableService
 {

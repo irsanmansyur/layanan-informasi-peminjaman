@@ -139,7 +139,7 @@ export function usePermissionsTableState(): UsePermissionsTableStateResult {
             setActionError(null);
             setDeletingId(permission.id);
 
-            router.delete(permissionsRoutes.destroy(permission.id).url, {
+            router.delete(permissionsRoutes.destroy(String(permission.id)).url, {
                 preserveScroll: true,
                 onSuccess: () => {
                     reloadTable();

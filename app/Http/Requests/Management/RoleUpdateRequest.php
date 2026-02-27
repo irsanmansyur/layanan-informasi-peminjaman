@@ -20,7 +20,7 @@ class RoleUpdateRequest extends FormRequest
             'name'        => ['required', 'string', 'max:255', 'unique:roles,name,'.$role?->id],
             'guard_name'  => ['sometimes', 'string', 'max:255'],
             'permissions' => ['sometimes', 'array'],
-            'permissions.*' => ['integer', 'distinct', 'exists:permissions,id'],
+            'permissions.*' => ['string', 'distinct', 'exists:permissions,id'],
         ];
     }
 }

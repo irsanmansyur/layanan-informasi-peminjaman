@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Services\PermissionGroupService;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 
 class PermissionGroupsSeeder extends Seeder
 {
@@ -38,6 +38,10 @@ class PermissionGroupsSeeder extends Seeder
             'profile.update',
         ]);
 
+        $service->createGroup('Activity Log Module', [
+            'activity-logs.read',
+        ]);
+
         $adminRole = Role::firstOrCreate([
             'name' => 'admin',
             'guard_name' => 'web',
@@ -52,5 +56,6 @@ class PermissionGroupsSeeder extends Seeder
         $service->assignGroupToRole($adminRole, 'Permission Module');
         $service->assignGroupToRole($adminRole, 'Profile Module');
         $service->assignGroupToRole($userRole, 'Profile Module');
+        $service->assignGroupToRole($adminRole, 'Activity Log Module');
     }
 }

@@ -70,7 +70,7 @@ function useRolePermissionMatrix(
                 setError(null);
 
                 if (mode === 'edit' && role) {
-                    const response = await fetch(rolesRoutes.show(role.id).url);
+                    const response = await fetch(rolesRoutes.show(String(role.id)).url);
 
                     if (!response.ok) {
                         throw new Error(
@@ -252,7 +252,7 @@ export function RoleFormDialog({
 
                 <Form
                     {...(isEdit && role
-                        ? rolesRoutes.update.form(role.id)
+                        ? rolesRoutes.update.form(String(role.id))
                         : rolesRoutes.store.form())}
                     options={{
                         preserveScroll: true,
