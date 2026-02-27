@@ -8,7 +8,7 @@ type PageProps = {
     message?: string;
 };
 
-export default function ServerError({ status = 500, message }: PageProps) {
+export default function ServerError({ message }: PageProps) {
     return (
         <>
             <Head title="Server Error" />

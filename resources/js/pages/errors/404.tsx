@@ -3,11 +3,7 @@ import { FileQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { home, dashboard } from '@/routes';
 
-type PageProps = {
-    status?: number;
-};
-
-export default function NotFound({ status = 404 }: PageProps) {
+export default function NotFound() {
     return (
         <>
             <Head title="Page Not Found" />
