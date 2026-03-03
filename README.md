@@ -98,13 +98,9 @@ Untuk test modul Management saja:
 php artisan test tests/Feature/Management/
 ```
 
-## Skrip lain yang berguna
+## Script lain yang berguna
 
 - `composer setup` — install semua dependency, generate key, migrate, dan build
 - `composer lint` — cek style PHP (Pint)
 - `npm run lint` — cek style frontend
 - `npm run build` — build asset untuk production
-
----
-
-Kalau ada error atau pertanyaan, cek dokumentasi Laravel atau buka issue di repo ini.
