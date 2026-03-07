@@ -1,106 +1,165 @@
 # Laravel Inertia Starter Kit
 
-Starter kit untuk aplikasi admin berbasis Laravel dan React (Inertia). Sudah dilengkapi manajemen user, role, permission, dan activity log. Cocok dipakai sebagai titik awal project baru atau pembelajaran.
+Project ini paket awal buat aplikasi admin pakai Laravel + React (Inertia). Udah ada user, role, permission, sama activity log. Bisa dipake buat mulai project baru atau buat belajar.
 
-## Yang perlu diinstall
+## Persyaratan
 
-- PHP 8.2 atau lebih baru
-- Composer
-- Node.js (versi LTS disarankan)
-- Database: SQLite (default), atau MySQL/PostgreSQL kalau mau
+Butuh PHP 8.2+, Composer, sama Node.js (LTS cukup). Database default SQLite; kalau mau pake MySQL/PostgreSQL tinggal atur di `.env`.
 
-## Cara pasang
+## Pasang project
 
-1. Clone project ini.
+Clone repo ini, terus jalanin:
 
-2. Install dependency PHP:
-   ```bash
-   composer install
-   ```
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-3. Copy file environment:
-   ```bash
-   cp .env.example .env
-   ```
+Kalau pake SQLite, buat dulu file database-nya:
 
-4. Generate key aplikasi:
-   ```bash
-   php artisan key:generate
-   ```
+```bash
+touch database/database.sqlite
+```
 
-5. Buat database SQLite (kalau pakai SQLite):
-   ```bash
-   touch database/database.sqlite
-   ```
+Lalu migrate dan seed:
 
-6. Jalankan migration:
-   ```bash
-   php artisan migrate
-   ```
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-7. Isi data awal (permission, role, user admin):
-   ```bash
-   php artisan db:seed
-   ```
+Frontend:
 
-8. Install dependency frontend:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+npm run dev
+```
 
-9. Build asset (development):
-   ```bash
-   npm run dev
-   ```
+Di terminal lain jalanin server Laravel:
 
-10. Di terminal lain, jalankan server:
-    ```bash
-    php artisan serve
-    ```
+```bash
+php artisan serve
+```
 
-Buka http://localhost:8000 di browser.
+Terus buka http://localhost:8000.
 
-## Login pertama kali
+## Login pertama
 
-Setelah seeding, gunakan akun admin ini:
+Setelah seed, bisa login pake akun admin:
 
-- **Email:** admin@app.com
-- **Password:** rahasia!
+- Email: **admin@app.com**
+- Password: **rahasia!**
 
-*(Jangan lupa ganti password kalau dipakai di production.)*
+(Ganti password ini kalo mau dipake beneran.)
 
-## Fitur yang tersedia
+## Fitur
 
-- **Auth:** Login, register, verifikasi email, 2FA, reset password
-- **Management Users:** CRUD user, bulk delete
-- **Management Roles:** CRUD role, assign permission
-- **Management Permissions:** CRUD permission, dikelompokkan per modul
-- **Activity Logs:** Catatan aktivitas (create, update, delete)
-- **Settings:** Profile, ganti password, appearance (theme), two-factor
+- **Auth** — Login, register, verifikasi email, 2FA, reset password
+- **Users** — CRUD user, bulk delete
+- **Roles** — CRUD role, assign permission
+- **Permissions** — CRUD permission, dikelompokin per modul
+- **Activity Logs** — Riwayat create/update/delete
+- **Settings** — Profile, ganti password, tema (light/dark), two-factor
 
-## Menjalankan development (sekali jalan)
+## Development
 
-Kalau mau satu perintah untuk server + queue + frontend:
+Satu perintah buat server + queue + Vite:
 
 ```bash
 composer dev
 ```
 
-## Menjalankan test
+## Test
 
 ```bash
 php artisan test
 ```
 
-Untuk test modul Management saja:
+Cuma mau test modul Management:
 
 ```bash
 php artisan test tests/Feature/Management/
 ```
 
-## Script lain yang berguna
+## Perintah lain
 
-- `composer setup` — install semua dependency, generate key, migrate, dan build
-- `composer lint` — cek style PHP (Pint)
-- `npm run lint` — cek style frontend
-- `npm run build` — build asset untuk production
+- `composer setup` — Install dependency, key, migrate, build sekaligus
+- `composer lint` — Cek style PHP (Pint)
+- `npm run lint` — Cek style JS/TS
+- `npm run build` — Build asset production
+
+## SSR (Server-Side Rendering)
+
+Inertia bisa render halaman di server dulu biar SEO dan first paint lebih oke. Di development bisa pake script yang udah disediain:
+
+```bash
+composer dev:ssr
+```
+
+Ini jalanin server Laravel, queue, log (pail), sama proses SSR sekaligus.
+
+**Production:** Aktifin SSR di `config/inertia.php` (`ssr.enabled => true`), terus build bundle SSR:
+
+```bash
+npm run build:ssr
+```
+
+Nanti Laravel akan nyari bundle di `bootstrap/ssr/`. Proses Node buat SSR harus jalan terus; bisa dijalankan manual (`php artisan inertia:start-ssr`) atau di-manage pake PM2/Supervisor (lihat bawah).
+
+## Production: PM2 & Supervisor
+
+Di production, queue worker dan (kalau pake SSR) proses Inertia SSR harus jalan terus. Bisa pake **PM2** atau **Supervisor**.
+
+### PM2
+
+PM2 buat jaga proses Node (SSR) sama queue worker tetep jalan. Contoh `ecosystem.config.cjs` di root project:
+
+```js
+module.exports = {
+  apps: [
+    {
+      name: 'inertia-ssr',
+      script: 'php',
+      args: 'artisan inertia:start-ssr',
+      cwd: '/path/to/project',
+      interpreter: 'none',
+      instances: 1,
+      autorestart: true,
+      watch: false,
+    },
+    {
+      name: 'queue',
+      script: 'php',
+      args: 'artisan queue:work --tries=3',
+      cwd: '/path/to/project',
+      interpreter: 'none',
+      autorestart: true,
+    },
+  ],
+};
+```
+
+Ganti `/path/to/project` sama path project lo. Jalankan: `pm2 start ecosystem.config.cjs`.
+
+### Supervisor
+
+Supervisor cocok buat proses PHP (queue worker). Contoh config di `/etc/supervisor/conf.d/laravel-worker.conf`:
+
+```ini
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/project/artisan queue:work --sleep=3 --tries=3
+autostart=true
+autorestart=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/path/to/project/storage/logs/worker.log
+```
+
+Lalu `supervisorctl reread`, `supervisorctl update`, `supervisorctl start laravel-worker`. Kalau pake SSR, proses Node-nya tetep perlu dijalankan terpisah (misalnya pake PM2 di atas atau systemd).
+
+## Dokumentasi
+
+- **[DataTable (frontend)](resources/js/components/datatables/README.md)** — Cara pake komponen tabel (search, filter, sort, pagination, export) di halaman React.

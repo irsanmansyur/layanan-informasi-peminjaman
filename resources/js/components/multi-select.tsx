@@ -314,7 +314,7 @@ export const MultiSelect = React.forwardRef<
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent
-                    className="p-0 w-[var(--radix-popover-trigger-width)] max-h-[300px] overflow-y-auto bg-background"
+                    className="p-0 w-(--radix-popover-trigger-width) max-h-[300px] overflow-y-auto bg-background"
                     sideOffset={4}
                     align="start"
                     onEscapeKeyDown={() => setIsPopoverOpen(false)}
@@ -364,7 +364,7 @@ export const MultiSelect = React.forwardRef<
                                             onSelect={() =>
                                                 toggleOption(option.value)
                                             }
-                                            className="group flex cursor-pointer items-center gap-2 aria-[selected='true']:bg-accent aria-[selected='true']:text-accent-foreground data-[disabled='true']:pointer-events-none data-[disabled='true']:opacity-50"
+                                            className="group flex cursor-pointer items-center gap-2 aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled='true']:pointer-events-none data-[disabled='true']:opacity-50"
                                         >
                                             <div
                                                 className={cn(

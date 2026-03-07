@@ -26,7 +26,7 @@ export default function ServerError({ message }: PageProps) {
                             Please try again later.
                         </p>
                         {message && (
-                            <p className="mt-2 max-w-md rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
+                            <p className="mt-2 max-w-full rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
                                 {message}
                             </p>
                         )}

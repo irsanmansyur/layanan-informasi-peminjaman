@@ -1,6 +1,6 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Link } from '@inertiajs/react';
 import { AlertTriangle } from 'lucide-react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { home, dashboard } from '@/routes';
 
@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
                                 go back to the home page.
                             </p>
                             {this.state.error && (
-                                <p className="mt-2 max-w-md rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
+                                <p className="mt-2 max-w-full rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
                                     {this.state.error.message}
                                 </p>
                             )}

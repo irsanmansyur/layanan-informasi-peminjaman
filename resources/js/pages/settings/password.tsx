@@ -1,12 +1,12 @@
 import { Form, Head } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/user-password';
@@ -22,6 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Password() {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const [newPasswordVisible, setNewPasswordVisible] = useState(false);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -70,17 +71,14 @@ export default function Password() {
                                     <Label htmlFor="current_password">
                                         Current password
                                     </Label>
-
-                                    <Input
-                                        id="current_password"
+                                    <PasswordInput
                                         ref={currentPasswordInput}
+                                        id="current_password"
                                         name="current_password"
-                                        type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
                                         placeholder="Current password"
                                     />
-
                                     <InputError
                                         message={errors.current_password}
                                     />
@@ -90,17 +88,16 @@ export default function Password() {
                                     <Label htmlFor="password">
                                         New password
                                     </Label>
-
-                                    <Input
-                                        id="password"
+                                    <PasswordInput
                                         ref={passwordInput}
+                                        id="password"
                                         name="password"
-                                        type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
                                         placeholder="New password"
+                                        visible={newPasswordVisible}
+                                        onVisibleChange={setNewPasswordVisible}
                                     />
-
                                     <InputError message={errors.password} />
                                 </div>
 
@@ -108,16 +105,16 @@ export default function Password() {
                                     <Label htmlFor="password_confirmation">
                                         Confirm password
                                     </Label>
-
-                                    <Input
+                                    <PasswordInput
                                         id="password_confirmation"
                                         name="password_confirmation"
-                                        type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
                                         placeholder="Confirm password"
+                                        visible={newPasswordVisible}
+                                        onVisibleChange={setNewPasswordVisible}
+                                        showToggle={false}
                                     />
-
                                     <InputError
                                         message={errors.password_confirmation}
                                     />

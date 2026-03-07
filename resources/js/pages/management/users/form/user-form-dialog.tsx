@@ -1,6 +1,6 @@
 
 import { Form } from '@inertiajs/react';
-import { CircleUserRound, KeyRound, Mail, ShieldCheck } from 'lucide-react';
+import { CircleUserRound, Mail, ShieldCheck } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import InputError from '@/components/input-error';
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { SKELETON_MIN_DURATION_FORM_MS } from '@/config/skeleton';
@@ -112,6 +113,7 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
     const [errors, setErrors] = useState<UserFormErrors>({});
     const [submitting, setSubmitting] = useState(false);
     const [editSkeletonDelayDone, setEditSkeletonDelayDone] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     const { options: roleOptions, loading: rolesLoading } = useUserRoleOptions(open);
     const isEditLoading = isEdit && (!editSkeletonDelayDone || rolesLoading);
@@ -343,41 +345,32 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                                 <div className="grid gap-2 md:grid-cols-2">
                                     <div className="grid gap-2">
                                         <Label htmlFor="password">Password</Label>
-                                        <div className="relative">
-                                            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
-                                                <KeyRound className="size-4" />
-                                            </span>
-                                            <Input
-                                                id="password"
-                                                name="password"
-                                                type="password"
-                                                value={formState.password}
-                                                onChange={handleChange('password')}
-                                                className="pl-9"
-                                                autoComplete="new-password"
-                                                placeholder={isEdit ? 'Password baru (opsional)' : 'Password'}
-                                            />
-                                        </div>
+                                        <PasswordInput
+                                            id="password"
+                                            name="password"
+                                            value={formState.password}
+                                            onChange={handleChange('password')}
+                                            autoComplete="new-password"
+                                            placeholder={isEdit ? 'Password baru (opsional)' : 'Password'}
+                                            visible={passwordVisible}
+                                            onVisibleChange={setPasswordVisible}
+                                        />
                                         <InputError message={errors.password} />
                                     </div>
 
                                     <div className="grid gap-2">
                                         <Label htmlFor="password_confirmation">Konfirmasi Password</Label>
-                                        <div className="relative">
-                                            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
-                                                <KeyRound className="size-4" />
-                                            </span>
-                                            <Input
-                                                id="password_confirmation"
-                                                name="password_confirmation"
-                                                type="password"
-                                                value={formState.password_confirmation}
-                                                onChange={handleChange('password_confirmation')}
-                                                className="pl-9"
-                                                autoComplete="new-password"
-                                                placeholder={isEdit ? 'Ulangi password baru' : 'Ulangi password'}
-                                            />
-                                        </div>
+                                        <PasswordInput
+                                            id="password_confirmation"
+                                            name="password_confirmation"
+                                            value={formState.password_confirmation}
+                                            onChange={handleChange('password_confirmation')}
+                                            autoComplete="new-password"
+                                            placeholder={isEdit ? 'Ulangi password baru' : 'Ulangi password'}
+                                            visible={passwordVisible}
+                                            onVisibleChange={setPasswordVisible}
+                                            showToggle={false}
+                                        />
                                         <InputError message={errors.password_confirmation} />
                                     </div>
                                     <div className="col-span-2">

@@ -227,6 +227,7 @@ function NavItemNode({
                     <SidebarMenuButton
                         isActive={isCurrentUrl(item.href)}
                         tooltip={{ children: item.title }}
+                        className='min-h-7 h-auto'
                     >
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
@@ -287,6 +288,7 @@ function NavItemNode({
                                                 {child.children?.map((grandChild) => (
                                                     <SidebarMenuSubItem
                                                         key={grandChild.title}
+                                                        className="h-auto"
                                                     >
                                                         <SidebarMenuSubButton
                                                             asChild
