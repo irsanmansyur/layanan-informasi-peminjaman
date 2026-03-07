@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ArrowDown, ArrowUp, Download } from 'lucide-react';
+import { ChevronDown, Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { SKELETON_MIN_DURATION_TABLE_MS } from '@/config/skeleton';
 import { useDataTable } from '@/hooks/use-datatables';
 import { cn } from '@/lib/utils';
 import type { Column, DataTableExportFormat, DataTableProps } from '@/types/datatables';
@@ -11,8 +12,6 @@ import { Checkbox } from './ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Skeleton } from './ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-
-const TABLE_SKELETON_MIN_DURATION = 1000;
 
 export function DataTable<T extends Record<string, any>>({
     columns,
@@ -83,7 +82,7 @@ export function DataTable<T extends Record<string, any>>({
 
         const timeoutId = window.setTimeout(() => {
             setTableSkeletonDelayDone(true);
-        }, TABLE_SKELETON_MIN_DURATION);
+        }, SKELETON_MIN_DURATION_TABLE_MS);
 
         return () => {
             window.clearTimeout(timeoutId);
@@ -223,37 +222,9 @@ export function DataTable<T extends Record<string, any>>({
                     ) : undefined
                 }
             />
-            {loading ? (
-                loadingContent ?? (
-                    <div className="overflow-hidden rounded-md border border-border">
-                        <div className="border-b border-border bg-muted/40 px-4 py-3">
-                            <Skeleton className="h-4 w-40" />
-                        </div>
-                        <div className="divide-y divide-border">
-                            {Array.from({ length: 5 }).map((_, rowIndex) => (
-                                <div
-                                    key={rowIndex}
-                                    className="grid grid-cols-3 gap-4 px-4 py-3 md:grid-cols-5"
-                                >
-                                    {Array.from({ length: 5 }).map((__, colIndex) => (
-                                        <Skeleton
-                                             
-                                            key={colIndex}
-                                            className="h-4 w-full"
-                                        />
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )
-            ) : (
-                <>
-                    {data && data.data.length > 0 ? (
-                        <>
-                            <div className="overflow-x-auto rounded-md border border-border max-h-[calc(100vh-300px)]">
+            <div className="overflow-x-auto rounded-md border border-border max-h-[calc(100vh-300px)]">
                                 <Table custom className={cn('data-table w-full', tableClassName)}>
-                                    <TableHeader className={cn('text-primary-foreground sticky top-0 bg-background', headerClassName)}>
+                                    <TableHeader className={cn('text-primary-foreground sticky top-0 bg-muted', headerClassName)}>
                                         <TableRow>
                                             {selectable && (
                                                 <TableHead className="w-6 md:w-auto">
@@ -287,18 +258,15 @@ export function DataTable<T extends Record<string, any>>({
                                                                 <div
                                                                     className="flex cursor-pointer items-center gap-1"
                                                                     onClick={() => handleSort(column.key.toString())}
-                                                                // size="sm"
-                                                                // variant="link"
                                                                 >
                                                                     {column.label}
                                                                     {column.key === params.sort && (
-                                                                        <span>
-                                                                            {params.direction === 'asc' ? (
-                                                                                <ArrowUp className="size-4" />
-                                                                            ) : (
-                                                                                <ArrowDown className="size-4" />
+                                                                        <ChevronDown
+                                                                            className={cn(
+                                                                                'size-4 shrink-0 transition-transform duration-200 ease-out',
+                                                                                params.direction === 'desc' && 'rotate-180',
                                                                             )}
-                                                                        </span>
+                                                                        />
                                                                     )}
                                                                 </div>
                                                             ) : (
@@ -320,74 +288,122 @@ export function DataTable<T extends Record<string, any>>({
                                             )}
                                         </TableRow>
                                     </TableHeader>
-                                    <TableBody className={bodyClassName} >
-                                        {data?.data.map((row, index) => (
-                                            <TableRow
-                                                key={row.id || index}
-                                                className={rowClassName ? rowClassName(row, index) : undefined}
-                                            >
-                                                {selectable && (
-                                                    <TableCell className="px-2">
-                                                        <div className="flex w-6 items-center md:w-auto">
-                                                            {isRowSelectable(row) && (
-                                                                <Checkbox
-                                                                    checked={isRowSelected(row)}
-                                                                    onCheckedChange={() => {
-                                                                        const newSelection = handleSelectRow(row);
-                                                                        onSelectionChange?.(newSelection);
-                                                                    }}
-                                                                    aria-label={`Select row ${index + 1}`}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </TableCell>
-                                                )}
-                                                {columns.map((column) => {
-                                                    const breakpointClass = resolveBreakpointClass(column);
-
-                                                    return (
-                                                        <TableCell
-                                                            key={column.key.toString()}
-                                                            className={cn(breakpointClass, column.cellClassName)}
-                                                        >
-                                                            {column.render
-                                                                ? column.render(row)
-                                                                : (row[column.key as keyof T] as React.ReactNode)}
-                                                        </TableCell>
-                                                    );
-                                                })}
-                                                {activeActions && (
+                                    <TableBody className={bodyClassName}>
+                                        {loading ? (
+                                            loadingContent ? (
+                                                <TableRow>
                                                     <TableCell
-                                                        className={cn(
-                                                            'text-center',
-                                                            actionColumn?.cellClassName,
-                                                        )}
-                                                        data-action-cell="true"
+                                                        colSpan={
+                                                            columns.length + (selectable ? 1 : 0) + (activeActions ? 1 : 0)
+                                                        }
+                                                        className="p-0"
                                                     >
-                                                        {activeActions(row)}
+                                                        {loadingContent}
                                                     </TableCell>
-                                                )}
+                                                </TableRow>
+                                            ) : (
+                                                <>
+                                                    {Array.from({ length: 5 }).map((_, rowIndex) => (
+                                                        <TableRow key={rowIndex}>
+                                                            {selectable && (
+                                                                <TableCell className="px-2">
+                                                                    <Skeleton className="h-4 w-4" />
+                                                                </TableCell>
+                                                            )}
+                                                            {columns.map((column) => {
+                                                                const breakpointClass = resolveBreakpointClass(column);
+                                                                return (
+                                                                    <TableCell
+                                                                        key={column.key.toString()}
+                                                                        className={cn(breakpointClass)}
+                                                                    >
+                                                                        <Skeleton className="h-4 w-full" />
+                                                                    </TableCell>
+                                                                );
+                                                            })}
+                                                            {activeActions && (
+                                                                <TableCell className="text-center">
+                                                                    <Skeleton className="mx-auto h-4 w-16" />
+                                                                </TableCell>
+                                                            )}
+                                                        </TableRow>
+                                                    ))}
+                                                </>
+                                            )
+                                        ) : data && data.data.length > 0 ? (
+                                            data.data.map((row, index) => (
+                                                <TableRow
+                                                    key={row.id || index}
+                                                    className={rowClassName ? rowClassName(row, index) : undefined}
+                                                >
+                                                    {selectable && (
+                                                        <TableCell className="px-2">
+                                                            <div className="flex w-6 items-center md:w-auto">
+                                                                {isRowSelectable(row) && (
+                                                                    <Checkbox
+                                                                        checked={isRowSelected(row)}
+                                                                        onCheckedChange={() => {
+                                                                            const newSelection = handleSelectRow(row);
+                                                                            onSelectionChange?.(newSelection);
+                                                                        }}
+                                                                        aria-label={`Select row ${index + 1}`}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                    )}
+                                                    {columns.map((column) => {
+                                                        const breakpointClass = resolveBreakpointClass(column);
+
+                                                        return (
+                                                            <TableCell
+                                                                key={column.key.toString()}
+                                                                className={cn(breakpointClass, column.cellClassName)}
+                                                            >
+                                                                {column.render
+                                                                    ? column.render(row)
+                                                                    : (row[column.key as keyof T] as React.ReactNode)}
+                                                            </TableCell>
+                                                        );
+                                                    })}
+                                                    {activeActions && (
+                                                        <TableCell
+                                                            className={cn(
+                                                                'text-center',
+                                                                actionColumn?.cellClassName,
+                                                            )}
+                                                            data-action-cell="true"
+                                                        >
+                                                            {activeActions(row)}
+                                                        </TableCell>
+                                                    )}
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={
+                                                        columns.length + (selectable ? 1 : 0) + (activeActions ? 1 : 0)
+                                                    }
+                                                    className="py-8 text-center"
+                                                >
+                                                    {emptyContent ?? (
+                                                        <p className="text-muted-foreground">Data tidak ditemukan</p>
+                                                    )}
+                                                </TableCell>
                                             </TableRow>
-                                        ))}
+                                        )}
                                     </TableBody>
                                 </Table>
-                            </div>
-                            <TablePagination
-                                data={data}
-                                pageSizeOptions={pageSizeOptions}
-                                params={params}
-                                onPageChange={handlePageChange}
-                                onPageSizeChange={handlePageSizeChange}
-                            />
-                        </>
-                    ) : emptyContent ? (
-                        emptyContent
-                    ) : (
-                        <div className="py-8 text-center">
-                            <p className="text-muted-foreground">Data tidak ditemukan</p>
-                        </div>
-                    )}
-                </>
+            </div>
+            {data && (
+                <TablePagination
+                    data={data}
+                    pageSizeOptions={pageSizeOptions}
+                    params={params}
+                    onPageChange={handlePageChange}
+                    onPageSizeChange={handlePageSizeChange}
+                />
             )}
         </div>
     );

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { SKELETON_MIN_DURATION_FORM_MS } from '@/config/skeleton';
 import permissionsRoutes from '@/routes/permissions';
 import rolesRoutes from '@/routes/roles';
 import { RolePermissionMatrix } from '../table/role-permission-matrix';
@@ -39,8 +40,6 @@ type RoleFormState = {
 type RoleFormErrors = Partial<Record<keyof RoleFormState, string | undefined>> & {
     permissions?: string;
 };
-
-const EDIT_SKELETON_MIN_DURATION = 1000;
 
 type PermissionMatrixState = {
     loading: boolean;
@@ -164,7 +163,7 @@ export function RoleFormDialog({
 
         const timeoutId = window.setTimeout(() => {
             setEditSkeletonDelayDone(true);
-        }, EDIT_SKELETON_MIN_DURATION);
+        }, SKELETON_MIN_DURATION_FORM_MS);
 
         return () => {
             window.clearTimeout(timeoutId);

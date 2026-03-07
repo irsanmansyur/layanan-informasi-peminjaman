@@ -7,9 +7,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { ActivityLog } from '../types/activity-log-types';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 type ActivityLogDetailsProps = {
     log: ActivityLog | null;

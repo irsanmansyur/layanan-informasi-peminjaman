@@ -1,5 +1,5 @@
-import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { toast } from 'sonner';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
@@ -48,9 +48,15 @@ export default function Profile({
                         options={{
                             preserveScroll: true,
                         }}
+                        onSuccess={() => {
+                            toast.success('Profile berhasil diperbarui.');
+                        }}
+                        onError={() => {
+                            toast.error('Gagal memperbarui profile. Periksa data yang diisi.');
+                        }}
                         className="space-y-6"
                     >
-                        {({ processing, recentlySuccessful, errors }) => (
+                        {({ processing, errors }) => (
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Name</Label>
@@ -125,18 +131,6 @@ export default function Profile({
                                     >
                                         Save
                                     </Button>
-
-                                    <Transition
-                                        show={recentlySuccessful}
-                                        enter="transition ease-in-out"
-                                        enterFrom="opacity-0"
-                                        leave="transition ease-in-out"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <p className="text-sm text-neutral-600">
-                                            Saved
-                                        </p>
-                                    </Transition>
                                 </div>
                             </>
                         )}

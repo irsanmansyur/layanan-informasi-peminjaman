@@ -107,6 +107,7 @@ export function usePermissionFilters(): UsePermissionFiltersResult {
                 label: 'Group',
                 options: groupOptions,
                 defaultValue: 'all',
+                variant: 'combobox',
             },
             {
                 key: 'guard_name',

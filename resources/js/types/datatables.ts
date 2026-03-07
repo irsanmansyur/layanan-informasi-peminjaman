@@ -25,10 +25,14 @@ export interface FilterOption {
     value: string | number;
 }
 
+export type FilterVariant = 'select' | 'combobox' | 'multiselect';
+
 export interface Filter {
     key: string;
     label: string;
     multiple?: boolean;
+    /** 'select' (default), 'combobox' (searchable), atau 'multiselect' */
+    variant?: FilterVariant;
     defaultValue?: string | number;
     options: FilterOption[];
     defaultSelected?: boolean;

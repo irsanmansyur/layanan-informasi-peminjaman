@@ -20,6 +20,7 @@ class DashboardTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user);
+        
 
         $response = $this->get(route('dashboard'));
         $response->assertOk();

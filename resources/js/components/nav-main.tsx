@@ -268,12 +268,9 @@ function NavItemNode({
                                     >
                                         <CollapsibleTrigger asChild>
                                             <SidebarMenuSubButton
-                                                size="sm"
                                                 className="flex w-full items-center justify-between"
                                             >
-                                                <span className="inline-flex items-center gap-2">
-                                                    <span>{child.title}</span>
-                                                </span>
+                                                <span>{child.title}</span>
                                                 <ChevronRight
                                                     className={`h-4 w-4 shrink-0 transition-transform duration-200 ${childExpanded ? 'rotate-90' : ''
                                                         }`}

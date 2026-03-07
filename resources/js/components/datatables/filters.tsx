@@ -1,10 +1,73 @@
-import { ArrowDown, ArrowUp, Search, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import type { TableFiltersProps } from '@/types/datatables';
+import { ChevronDown, Search, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { cn } from '@/lib/utils';
+import type { Filter, TableFiltersProps } from '@/types/datatables';
 import { MultiSelect } from '../multi-select';
 import { Button } from '../ui/button';
+import {
+    Combobox,
+    ComboboxContent,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxList,
+} from '../ui/combobox';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+
+function ComboboxFilter({
+    filter,
+    selectedValue,
+    searchQuery,
+    onSearchChange,
+    onValueChange,
+}: {
+    filter: Filter;
+    selectedValue: string | null;
+    searchQuery: string;
+    onSearchChange: (query: string) => void;
+    onValueChange: (value: string | null) => void;
+}) {
+    const filteredOptions = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return filter.options;
+        return filter.options.filter(
+            (opt) =>
+                opt.label.toLowerCase().includes(q) ||
+                opt.value.toString().toLowerCase().includes(q),
+        );
+    }, [filter.options, searchQuery]);
+
+    return (
+        <Combobox
+            value={selectedValue}
+            onValueChange={onValueChange}
+        >
+            <ComboboxInput
+                placeholder={`Cari ${filter.label}...`}
+                showClear
+                className="w-full"
+                onChange={(e) => onSearchChange((e.target as HTMLInputElement).value)}
+            />
+            <ComboboxContent>
+                <ComboboxList>
+                    {filteredOptions.map((option) => (
+                        <ComboboxItem
+                            key={option.value}
+                            value={option.value.toString()}
+                        >
+                            {option.label}
+                        </ComboboxItem>
+                    ))}
+                </ComboboxList>
+                {filteredOptions.length === 0 && (
+                    <div className="py-2 text-center text-sm text-muted-foreground">
+                        Tidak ada hasil
+                    </div>
+                )}
+            </ComboboxContent>
+        </Combobox>
+    );
+}
 
 export function TableFilters({
     filters,
@@ -19,6 +82,7 @@ export function TableFilters({
     const [isVisible, setIsVisible] = useState(true);
     const [selectedValues, setSelectedValues] = useState<Record<string, string>>({});
     const [searchValue, setSearchValue] = useState('');
+    const [comboboxSearch, setComboboxSearch] = useState<Record<string, string>>({});
 
     // Handle initial default values
     useEffect(() => {
@@ -34,12 +98,12 @@ export function TableFilters({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleSingleFilter = (key: string, value: string) => {
+    const handleSingleFilter = (key: string, value: string | null) => {
         setSelectedValues((prev) => ({
             ...prev,
-            [key]: value,
+            [key]: value ?? '',
         }));
-        onSingleFilter(key, value);
+        onSingleFilter(key, value ?? '');
     };
 
     const handleClearFilters = () => {
@@ -60,7 +124,12 @@ export function TableFilters({
                             >
                                 <h2 className="text-foreground text-md">Filters</h2>
                                 <div className="flex gap-2">
-                                    {isVisible ? <ArrowUp className="size-5" /> : <ArrowDown className="size-5" />}
+                                    <ChevronDown
+                                        className={cn(
+                                            'size-5 shrink-0 transition-transform duration-200 ease-out',
+                                            isVisible ? 'rotate-180 text-foreground' : 'text-muted-foreground',
+                                        )}
+                                    />
                                 </div>
                             </Button>
                         </div>
@@ -76,7 +145,7 @@ export function TableFilters({
                         >
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                                 {filters.map((filter) => (
-                                    <div key={filter.key} className="flex items-center w-full">
+                                    <div key={filter.key} className="flex w-full items-center">
                                         {filter.multiple ? (
                                             <MultiSelect
                                                 options={filter.options.map((option) => ({
@@ -87,12 +156,38 @@ export function TableFilters({
                                                 onValueChange={(values) => onMultiFilter(filter.key, values)}
                                                 className="w-full"
                                             />
+                                        ) : filter.variant === 'combobox' ? (
+                                            <div className="w-full">
+                                                <ComboboxFilter
+                                                    filter={filter}
+                                                    selectedValue={
+                                                        selectedValues[filter.key] === undefined ||
+                                                        selectedValues[filter.key] === ''
+                                                            ? null
+                                                            : selectedValues[filter.key]
+                                                    }
+                                                    searchQuery={comboboxSearch[filter.key] ?? ''}
+                                                    onSearchChange={(query) =>
+                                                        setComboboxSearch((prev) => ({
+                                                            ...prev,
+                                                            [filter.key]: query,
+                                                        }))
+                                                    }
+                                                    onValueChange={(value) => {
+                                                        handleSingleFilter(filter.key, value);
+                                                        setComboboxSearch((prev) => ({
+                                                            ...prev,
+                                                            [filter.key]: '',
+                                                        }));
+                                                    }}
+                                                />
+                                            </div>
                                         ) : (
                                             <Select
                                                 value={selectedValues[filter.key] || 'all'}
                                                 onValueChange={(value) => handleSingleFilter(filter.key, value)}
                                             >
-                                                <SelectTrigger>
+                                                <SelectTrigger className="w-full">
                                                     <SelectValue placeholder={filter.label} />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -113,7 +208,14 @@ export function TableFilters({
                                     variant="outline"
                                     onClick={handleClearFilters}
                                     className="h-8"
-                                    disabled={!filters.some((filter) => params[filter.key])}
+                                    disabled={
+                                        !filters.some(
+                                            (filter) =>
+                                                params[filter.key] !== undefined &&
+                                                params[filter.key] !== '' &&
+                                                params[filter.key] !== 'all',
+                                        )
+                                    }
                                 >
                                     Clear Filters
                                 </Button>

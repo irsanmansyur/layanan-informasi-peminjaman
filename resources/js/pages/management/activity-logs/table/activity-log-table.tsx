@@ -30,6 +30,7 @@ export default function ActivityLogTable() {
                 { label: 'Login', value: 'login' },
                 { label: 'Logout', value: 'logout' },
             ],
+            variant: 'combobox',
         },
         {
             key: 'subject_type',
@@ -39,6 +40,7 @@ export default function ActivityLogTable() {
                 { label: 'Role', value: 'Role' },
                 { label: 'Permission', value: 'Permission' },
             ],
+            variant: 'combobox',
         },
     ];
 

@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { SKELETON_MIN_DURATION_FORM_MS } from '@/config/skeleton';
 import rolesRoutes from '@/routes/roles';
 import usersRoutes from '@/routes/users';
 import type { ManagementUser, RoleResponse } from '../types/user-types';
@@ -45,8 +46,6 @@ type UserFormState = {
 };
 
 type UserFormErrors = Partial<Record<keyof UserFormState | 'roles', string>>;
-
-const EDIT_SKELETON_MIN_DURATION = 1000;
 
 function useUserRoleOptions(enabled: boolean) {
     const [options, setOptions] = useState<RoleOption[]>([]);
@@ -133,7 +132,7 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
 
         const timeoutId = window.setTimeout(() => {
             setEditSkeletonDelayDone(true);
-        }, EDIT_SKELETON_MIN_DURATION);
+        }, SKELETON_MIN_DURATION_FORM_MS);
 
         return () => {
             window.clearTimeout(timeoutId);

@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { SKELETON_MIN_DURATION_FORM_MS } from '@/config/skeleton';
 import permissionsRoutes from '@/routes/permissions';
 import type { ManagementPermission } from '../types/permission-types';
 
@@ -37,8 +38,6 @@ type PermissionFormState = {
 };
 
 type PermissionFormErrors = Partial<Record<keyof PermissionFormState, string>>;
-
-const EDIT_SKELETON_MIN_DURATION = 800;
 
 export function PermissionFormDialog({
     mode,
@@ -72,7 +71,7 @@ export function PermissionFormDialog({
 
         const timeoutId = window.setTimeout(() => {
             setEditSkeletonDelayDone(true);
-        }, EDIT_SKELETON_MIN_DURATION);
+        }, SKELETON_MIN_DURATION_FORM_MS);
 
         return () => {
             window.clearTimeout(timeoutId);
