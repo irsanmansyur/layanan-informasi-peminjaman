@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { DataTable } from '@/components/datatables';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ACTIVITY_LOG_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 import activityLogs from '@/routes/activity-logs';
 import type { Filter } from '@/types/datatables';
 import type { ActivityLog } from '../types/activity-log-types';
@@ -58,7 +59,8 @@ export default function ActivityLogTable() {
                     fetchUrl={activityLogs.fetchData().url}
                     dataPath="logs"
                     filters={filters}
-                    searchPlaceholder="Cari deskripsi, modul, atau user..."
+                    searchDebounceMs={ACTIVITY_LOG_DATA_TABLE_SEARCH_DEBOUNCE_MS}
+                    searchPlaceholder="Cari deskripsi, modul, subject, atau causer (nama/email)…"
                     searchableColumns={activityLogSearchableColumns}
                     defaultSort={{
                         key: 'created_at',

@@ -2,6 +2,7 @@ import React from 'react';
 import { DataTable } from '@/components/datatables';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 import { usePermissions } from '@/hooks/use-permissions';
 import users from '@/routes/users';
 import { useRoleFilters, useUsersBulkDelete, useUsersTableState } from '../hooks/user-hooks';
@@ -52,6 +53,7 @@ export default function UserTable() {
                     filters={filters}
                     fetchUrl={users.fetchData().url}
                     dataPath="users"
+                    searchDebounceMs={MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS}
                     searchPlaceholder="Search users..."
                     defaultSort={{
                         key: 'created_at',

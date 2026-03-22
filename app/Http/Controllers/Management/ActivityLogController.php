@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Management;
 
 use App\Http\Controllers\Controller;
-use App\Services\Management\ActivityLogDataTableService;
+use App\Services\Management\ActivityLogs\ActivityLogDataTableService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,6 +14,7 @@ class ActivityLogController extends Controller
     public function __construct(
         private readonly ActivityLogDataTableService $activityLogDataTableService,
     ) {
+        $this->middleware(['auth', 'verified']);
         $this->middleware('can:activity-logs.read')->only(['index', 'fetchData']);
     }
 

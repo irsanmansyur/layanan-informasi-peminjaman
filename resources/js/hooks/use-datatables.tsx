@@ -1,11 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import lodash from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import type { FilterParams, PaginatedData, UseDataTableProps, UseDataTableReturn } from '@/types/datatables';
-const { debounce } = lodash;
+import debounce from 'lodash/debounce';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DATA_TABLE_DEFAULT_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
+import { isAxiosAbortError } from '@/lib/is-axios-abort-error';
+import type {
+    DataTableRow,
+    FilterParams,
+    PaginatedData,
+    UseDataTableProps,
+    UseDataTableReturn,
+} from '@/types/datatables';
 
-export function useDataTable<T extends Record<string, any>>({
+export function useDataTable<T extends DataTableRow>({
     fetchUrl,
     defaultSort,
     defaultLimit = 10,
@@ -14,11 +20,11 @@ export function useDataTable<T extends Record<string, any>>({
     initialFilters,
     onFilterChange,
     dataFetcher,
-}: UseDataTableProps): UseDataTableReturn<T> {
+    searchDebounceMs,
+}: UseDataTableProps<T>): UseDataTableReturn<T> {
     const [data, setData] = useState<PaginatedData<T> | null>(null);
     const [loading, setLoading] = useState(false);
     const [params, setParams] = useState<FilterParams>(() => {
-        // Initialize params with defaults and initial filters
         const initialParams: FilterParams = {
             search: '',
             sort: defaultSort?.key || '',
@@ -27,7 +33,6 @@ export function useDataTable<T extends Record<string, any>>({
             page: 1,
         };
 
-        // Add filter defaults
         filters.forEach((filter) => {
             if (filter.defaultSelected && filter.defaultValue) {
                 initialParams[filter.key] = filter.defaultValue;
@@ -36,7 +41,6 @@ export function useDataTable<T extends Record<string, any>>({
             }
         });
 
-        // Override with initial filters if provided
         if (initialFilters) {
             Object.keys(initialFilters).forEach((key) => {
                 if (initialFilters[key]) {
@@ -50,43 +54,59 @@ export function useDataTable<T extends Record<string, any>>({
 
     const [selectedRows, setSelectedRows] = useState<T[]>([]);
 
-    // Debounced search handler
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const debouncedSearch = useCallback(
-        debounce((value: string) => {
-            setParams((prev) => ({ ...prev, search: value, page: 1 }));
-        }, 300),
-        [],
+    const debounceMs = searchDebounceMs ?? DATA_TABLE_DEFAULT_SEARCH_DEBOUNCE_MS;
+
+    const debouncedSearch = useMemo(
+        () =>
+            debounce((value: string) => {
+                setParams((prev) => ({ ...prev, search: value, page: 1 }));
+            }, debounceMs),
+        [debounceMs],
     );
 
-    // Fetch data
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-
-            let responseData: PaginatedData<T>;
-
-            if (dataFetcher) {
-                responseData = (await dataFetcher(params)) as PaginatedData<T>;
-            } else {
-                const response = await axios.get(fetchUrl, { params });
-                responseData = (dataPath ? response.data[dataPath] : response.data) as PaginatedData<T>;
-            }
-
-            setData(responseData);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params]);
+        const controller = new AbortController();
+        let cancelled = false;
 
-    // Sort handler
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+
+                let responseData: PaginatedData<T>;
+
+                if (dataFetcher) {
+                    responseData = await dataFetcher(params);
+                } else {
+                    const response = await axios.get(fetchUrl, {
+                        params,
+                        signal: controller.signal,
+                    });
+                    responseData = (dataPath ? response.data[dataPath] : response.data) as PaginatedData<T>;
+                }
+
+                if (!cancelled) {
+                    setData(responseData);
+                }
+            } catch (error) {
+                if (isAxiosAbortError(error)) {
+                    return;
+                }
+                console.error('Error fetching data:', error);
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        void fetchData();
+
+        return () => {
+            cancelled = true;
+            controller.abort();
+        };
+    }, [params, fetchUrl, dataPath, dataFetcher]);
+
     const handleSort = (key: string) => {
         setParams((prev) => ({
             ...prev,
@@ -96,9 +116,8 @@ export function useDataTable<T extends Record<string, any>>({
         }));
     };
 
-    // Filter handlers
     const handleSingleFilter = (key: string, value: string) => {
-        const newParams = {
+        const newParams: FilterParams = {
             ...params,
             [key]: value === 'all' ? '' : value,
             page: 1,
@@ -108,7 +127,7 @@ export function useDataTable<T extends Record<string, any>>({
     };
 
     const handleMultiFilter = (key: string, values: string[]) => {
-        const newParams = {
+        const newParams: FilterParams = {
             ...params,
             [key]: values.join(','),
             page: 1,
@@ -116,18 +135,19 @@ export function useDataTable<T extends Record<string, any>>({
         setParams(newParams);
         onFilterChange?.(newParams);
     };
+
     const handleClearFilters = useCallback(() => {
-        const newParams = {
-            ...params,
-            ...filters.reduce((acc, filter) => ({ ...acc, [filter.key]: '' }), {}),
-            page: 1,
-        };
-        setParams(newParams);
-        onFilterChange?.(newParams);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        setParams((prev) => {
+            const newParams: FilterParams = {
+                ...prev,
+                ...filters.reduce<Record<string, string>>((acc, filter) => ({ ...acc, [filter.key]: '' }), {}),
+                page: 1,
+            };
+            onFilterChange?.(newParams);
+            return newParams;
+        });
     }, [filters, onFilterChange]);
 
-    // Pagination handlers
     const handlePageSizeChange = (value: string) => {
         setParams((prev) => ({ ...prev, limit: Number(value), page: 1 }));
     };
@@ -135,13 +155,6 @@ export function useDataTable<T extends Record<string, any>>({
     const handlePageChange = (page: number) => {
         setParams((prev) => ({ ...prev, page }));
     };
-
-    // Selection handlers
-    // const handleSelectAll = (checked: boolean) => {
-    //     const allRows = data?.data ?? [];
-    //     setSelectedRows(checked ? allRows : []);
-    //     return checked ? allRows : [];
-    // };
 
     const handleSelectAll = (checked: boolean, condition?: (row: T) => boolean) => {
         const allRows = data?.data ?? [];
@@ -166,12 +179,6 @@ export function useDataTable<T extends Record<string, any>>({
     };
 
     const isRowSelected = (row: T) => selectedRows.some((selectedRow) => selectedRow.id === row.id);
-
-    // const isAllSelected = Boolean(
-    //     data?.data &&
-    //         data.data.length > 0 &&
-    //         selectedRows.length === data.data.length
-    // );
 
     const isAllSelected = (condition?: (row: T) => boolean) => {
         if (!data?.data || data.data.length === 0) return false;

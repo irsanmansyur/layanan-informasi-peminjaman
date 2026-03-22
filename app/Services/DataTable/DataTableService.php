@@ -2,6 +2,7 @@
 
 namespace App\Services\DataTable;
 
+use App\Support\DataTable\LikeSearch;
 use Closure;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -59,8 +60,19 @@ class DataTableService
             return;
         }
 
-        $pattern = '%'.$term.'%';
-        $operator = $options['operator'] ?? 'like';
+        $raw = trim((string) $term);
+        if ($raw === '') {
+            return;
+        }
+
+        $escaped = LikeSearch::escapeWildcards($raw);
+        $pattern = LikeSearch::wrapContainsPattern($escaped);
+
+        $requestedOperator = strtolower((string) ($options['operator'] ?? 'like'));
+        $operator = $requestedOperator === 'ilike'
+            ? LikeSearch::caseInsensitiveOperator($query)
+            : ($options['operator'] ?? 'like');
+
         $columns = $options['columns'] ?? [];
         $relations = $options['relations'] ?? [];
 
@@ -114,6 +126,10 @@ class DataTableService
                     continue;
                 }
 
+                if (strtolower((string) $operator) === 'ilike') {
+                    $operator = LikeSearch::caseInsensitiveOperator($query);
+                }
+
                 $query->whereHas($relation, function (Builder $relationQuery) use ($column, $operator, $value): void {
                     $relationQuery->where($column, $operator, $value);
                 });
@@ -162,4 +178,3 @@ class DataTableService
         }
     }
 }
-

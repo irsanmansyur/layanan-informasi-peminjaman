@@ -1,16 +1,26 @@
 <?php
 
-namespace App\Http\Requests\Management;
+namespace App\Http\Requests\Management\Users;
 
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
-class UserStoreRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     use PasswordValidationRules;
     use ProfileValidationRules;
+
+    public function authorize(): bool
+    {
+        /** @var User|null $user */
+        $user = $this->route('user');
+
+        return $user !== null && (bool) $this->user()?->can('update', $user);
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -19,12 +29,13 @@ class UserStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->route('user');
+
         return [
-            ...$this->profileRules(),
-            'password' => $this->passwordRules(),
+            ...$this->profileRules($user?->id),
+            'password' => ['nullable', 'string', Password::default(), 'confirmed'],
             'roles' => ['sometimes', 'array'],
             'roles.*' => ['string', 'exists:roles,name'],
         ];
     }
 }
-

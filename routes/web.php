@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Management\ActivityLogController;
 use App\Http\Controllers\Management\PermissionsController;
 use App\Http\Controllers\Management\RolesController;
@@ -14,9 +15,7 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', DashboardController::class)->name('dashboard');
 
 Route::middleware('auth', 'verified')->group(function () {
 
@@ -64,4 +63,4 @@ Route::middleware('auth', 'verified')->group(function () {
 
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

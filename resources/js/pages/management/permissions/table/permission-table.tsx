@@ -1,5 +1,6 @@
 import React from 'react';
 import { DataTable } from '@/components/datatables';
+import { MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 import { usePermissions } from '@/hooks/use-permissions';
@@ -43,6 +44,7 @@ export default function PermissionTable() {
                     filters={filters}
                     fetchUrl={permissionsRoutes.fetchData().url}
                     dataPath="permissions"
+                    searchDebounceMs={MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS}
                     searchPlaceholder="Search permissions..."
                     defaultSort={{
                         key: 'name',

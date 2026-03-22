@@ -1,5 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ReactNode } from 'react';
+
+/** Baris tabel server-side: wajib punya `id` untuk seleksi & key stabil. */
+export type DataTableRow = Record<string, unknown> & { id: string | number };
 
 export type DataTableBreakpoint = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -60,15 +62,19 @@ export interface PaginatedData<T> {
     total: number;
 }
 
-export interface UseDataTableProps {
+export type DataTableFilterValues = Record<string, string | number>;
+
+export interface UseDataTableProps<T extends DataTableRow = DataTableRow> {
     fetchUrl: string;
     defaultSort?: SortConfig;
     defaultLimit?: number;
     filters?: Filter[];
     dataPath?: string;
-    initialFilters?: Record<string, any>;
-    onFilterChange?: (filters: Record<string, any>) => void;
-    dataFetcher?: (params: FilterParams) => Promise<PaginatedData<any>>;
+    initialFilters?: DataTableFilterValues;
+    onFilterChange?: (filters: FilterParams) => void;
+    dataFetcher?: (params: FilterParams) => Promise<PaginatedData<T>>;
+    /** Debounce ketik search (ms). Default dari `DATA_TABLE_DEFAULT_SEARCH_DEBOUNCE_MS`. */
+    searchDebounceMs?: number;
 }
 
 export interface UseDataTableReturn<T> {
@@ -130,7 +136,7 @@ export interface TablePaginationProps<T> {
     onPageSizeChange: (value: string) => void;
 }
 
-export interface DataTableProps<T extends Record<string, any>> {
+export interface DataTableProps<T extends DataTableRow> {
     columns: Column<T>[];
     filters?: Filter[];
     fetchUrl: string;
@@ -150,14 +156,14 @@ export interface DataTableProps<T extends Record<string, any>> {
     selectableCondition?: (row: T) => boolean;
     onSelectionChange?: (selectedRows: T[]) => void;
     dataPath?: string;
-    initialFilters?: Record<string, any>;
-    onFilterChange?: (filters: Record<string, any>) => void;
+    initialFilters?: DataTableFilterValues;
+    onFilterChange?: (filters: FilterParams) => void;
     searchableColumns?: SearchableColumn[];
     searchFieldKey?: string;
+    /** Debounce search (ms); naikkan untuk tabel backend berat. */
+    searchDebounceMs?: number;
     exportConfig?: DataTableExportConfig<T>;
     actionColumn?: DataTableActionColumn;
     loadingContent?: ReactNode;
     emptyContent?: ReactNode;
 }
-
-

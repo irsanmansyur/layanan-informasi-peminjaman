@@ -1,17 +1,18 @@
 <?php
+
 namespace App\Http\Controllers\Management;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Management\UserBulkDestroyRequest;
-use App\Http\Requests\Management\UserStoreRequest;
-use App\Http\Requests\Management\UserUpdateRequest;
+use App\Http\Requests\Management\Users\UserBulkDestroyRequest;
+use App\Http\Requests\Management\Users\UserStoreRequest;
+use App\Http\Requests\Management\Users\UserUpdateRequest;
 use App\Models\User;
-use App\Services\Management\UserDataTableService;
-use App\Services\Management\UserService;
+use App\Services\Management\Users\UserDataTableService;
+use App\Services\Management\Users\UserService;
+use App\Support\Http\ManagementRedirect;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,13 +21,12 @@ class UsersController extends Controller
     public function __construct(
         private readonly UserDataTableService $userDataTableService,
         private readonly UserService $userService,
-    ) 
-    {
+    ) {
         $this->middleware(['auth', 'verified']);
         $this->middleware('can:users.read')->only(['index', 'fetchData']);
         $this->middleware('can:users.create')->only('store');
         $this->middleware('can:users.update')->only('update');
-        $this->middleware('can:users.delete')->only('destroy');
+        $this->middleware('can:users.delete')->only(['destroy', 'bulkDestroy']);
     }
 
     public function index(Request $request): Response
@@ -43,73 +43,43 @@ class UsersController extends Controller
     {
         $data = $request->validated();
 
-        try {
-            $this->userService->create($data);
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'message' => 'Error creating user.',
-            ]);
-        }
-
-        return back();
+        return ManagementRedirect::backAfter(
+            fn () => $this->userService->create($data),
+            'Error creating user.',
+        );
     }
 
     public function update(UserUpdateRequest $request, User $user)
     {
         $data = $request->validated();
 
-        try {
-            $this->userService->update($user, $data);
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'message' => 'Error updating user.',
-            ]);
-        }
-
-        return back();
+        return ManagementRedirect::backAfter(
+            fn () => $this->userService->update($user, $data),
+            'Error updating user.',
+        );
     }
 
     public function destroy(User $user)
     {
-        try {
-            $this->userService->delete($user);
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'message' => 'Error deleting user.',
-            ]);
-        }
-
-        return back();
+        return ManagementRedirect::backAfter(
+            fn () => $this->userService->delete($user),
+            'Error deleting user.',
+        );
     }
 
     public function bulkDestroy(UserBulkDestroyRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $ids = (array) $request->validated('ids');
+        $count = $this->userService->bulkDestroy($ids, (string) Auth::id());
 
-        $ids = (array) ($data['ids'] ?? []);
-        $currentUserId = Auth::id();
-
-        $filteredIds = array_values(
-            array_filter(
-                $ids,
-                static fn(string $id): bool => $id !== $currentUserId,
-            ),
-        );
-
-        if ($filteredIds === []) {
+        if ($count === null) {
             return response()->json([
                 'message' => 'Tidak ada user yang dapat dihapus.',
             ], 422);
         }
 
-        DB::transaction(static function () use ($filteredIds): void {
-            User::query()
-                ->whereIn('id', $filteredIds)
-                ->delete();
-        });
-
         return response()->json([
-            'deleted_count' => \count($filteredIds),
+            'deleted_count' => $count,
         ]);
     }
 }

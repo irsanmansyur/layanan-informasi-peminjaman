@@ -1,18 +1,23 @@
 <?php
 
-namespace App\Services\Management;
+namespace App\Services\Management\Permissions;
 
 use App\Models\Permission;
+use App\Repositories\Contracts\PermissionRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class PermissionService
 {
+    public function __construct(
+        private readonly PermissionRepositoryInterface $permissions,
+    ) {}
+
     public function create(array $data): Permission
     {
-        return DB::transaction(static function () use ($data): Permission {
-            return Permission::query()->create([
-                'name'       => $data['name'],
-                'group'      => $data['group'] ?? null,
+        return DB::transaction(function () use ($data): Permission {
+            return $this->permissions->create([
+                'name' => $data['name'],
+                'group' => $data['group'] ?? null,
                 'guard_name' => $data['guard_name'] ?? 'web',
             ]);
         });
@@ -20,7 +25,7 @@ class PermissionService
 
     public function update(Permission $permission, array $data): Permission
     {
-        return DB::transaction(static function () use ($permission, $data): Permission {
+        return DB::transaction(function () use ($permission, $data): Permission {
             $permission->name = $data['name'];
             $permission->group = $data['group'] ?? null;
 
@@ -28,7 +33,7 @@ class PermissionService
                 $permission->guard_name = $data['guard_name'];
             }
 
-            $permission->save();
+            $this->permissions->save($permission);
 
             return $permission;
         });
@@ -36,9 +41,8 @@ class PermissionService
 
     public function delete(Permission $permission): void
     {
-        DB::transaction(static function () use ($permission): void {
-            $permission->delete();
+        DB::transaction(function () use ($permission): void {
+            $this->permissions->delete($permission);
         });
     }
 }
-

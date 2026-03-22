@@ -1,5 +1,6 @@
 import { DataTable } from '@/components/datatables';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 import { usePermissions } from '@/hooks/use-permissions';
 import rolesRoutes from '@/routes/roles';
 import { useRoleFilters, useRolesTableState } from '../hooks/role-hooks';
@@ -36,6 +37,7 @@ export default function RoleTable() {
                     filters={filters}
                     fetchUrl={rolesRoutes.fetchData().url}
                     dataPath="roles"
+                    searchDebounceMs={MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS}
                     searchPlaceholder="Search roles..."
                     defaultSort={{
                         key: 'name',

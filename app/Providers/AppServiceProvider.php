@@ -2,18 +2,29 @@
 
 namespace App\Providers;
 
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\User;
+use App\Observers\GlobalActivityObserver;
+use App\Policies\ActivityPolicy;
+use App\Repositories\Contracts\ActivityLogRepositoryInterface;
+use App\Repositories\Contracts\PermissionRepositoryInterface;
+use App\Repositories\Contracts\RoleRepositoryInterface;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Eloquent\ActivityLogRepository;
+use App\Repositories\Eloquent\PermissionRepository;
+use App\Repositories\Eloquent\RoleRepository;
+use App\Repositories\Eloquent\UserRepository;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Permission;
-use App\Observers\GlobalActivityObserver;
+use Spatie\Activitylog\Models\Activity;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,7 +33,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->singleton(RoleRepositoryInterface::class, RoleRepository::class);
+        $this->app->singleton(PermissionRepositoryInterface::class, PermissionRepository::class);
+        $this->app->singleton(ActivityLogRepositoryInterface::class, ActivityLogRepository::class);
     }
 
     /**
@@ -33,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configureActivityLog();
         $this->registerObservers();
+        Gate::policy(Activity::class, ActivityPolicy::class);
     }
 
     /**

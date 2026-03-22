@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronDown, Download } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { SKELETON_MIN_DURATION_TABLE_MS } from '@/config/skeleton';
+import type { ReactNode } from 'react';
 import { useDataTable } from '@/hooks/use-datatables';
 import { cn } from '@/lib/utils';
-import type { Column, DataTableExportFormat, DataTableProps } from '@/types/datatables';
+import type { Column, DataTableExportFormat, DataTableProps, DataTableRow } from '@/types/datatables';
 import { TableFilters } from './datatables/filters';
 import { TablePagination } from './datatables/pagination';
 import { Button } from './ui/button';
@@ -13,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Skeleton } from './ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends DataTableRow>({
     columns,
     filters = [],
     fetchUrl,
@@ -39,6 +37,7 @@ export function DataTable<T extends Record<string, any>>({
     rowClassName,
     loadingContent,
     emptyContent,
+    searchDebounceMs,
 }: DataTableProps<T>) {
     const {
         data,
@@ -64,30 +63,8 @@ export function DataTable<T extends Record<string, any>>({
         dataPath,
         initialFilters,
         onFilterChange,
+        searchDebounceMs,
     });
-
-    const [tableSkeletonDelayDone, setTableSkeletonDelayDone] = useState(false);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const showLoadingSkeleton = loading && !tableSkeletonDelayDone;
-
-    useEffect(() => {
-        if (!loading) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setTableSkeletonDelayDone(false);
-            return;
-        }
-
-        setTableSkeletonDelayDone(false);
-
-        const timeoutId = window.setTimeout(() => {
-            setTableSkeletonDelayDone(true);
-        }, SKELETON_MIN_DURATION_TABLE_MS);
-
-        return () => {
-            window.clearTimeout(timeoutId);
-        };
-    }, [loading]);
 
     const hasBaseVisibleColumn = columns.some((column) => !column.hideBelow);
     const forceShowAllOnBase = !hasBaseVisibleColumn;
@@ -362,7 +339,7 @@ export function DataTable<T extends Record<string, any>>({
                                                             >
                                                                 {column.render
                                                                     ? column.render(row)
-                                                                    : (row[column.key as keyof T] as React.ReactNode)}
+                                                                    : (row[column.key as keyof T] as ReactNode)}
                                                             </TableCell>
                                                         );
                                                     })}

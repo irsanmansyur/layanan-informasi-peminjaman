@@ -3,24 +3,28 @@
 namespace App\Http\Controllers\Management;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Management\RoleStoreRequest;
-use App\Http\Requests\Management\RoleUpdateRequest;
-use App\Services\Management\RoleDataTableService;
-use App\Services\Management\RoleService;
+use App\Http\Requests\Management\Roles\RoleStoreRequest;
+use App\Http\Requests\Management\Roles\RoleUpdateRequest;
+use App\Models\Role;
+use App\Presenters\Management\RoleEditPresenter;
+use App\Repositories\Contracts\PermissionRepositoryInterface;
+use App\Repositories\Contracts\RoleRepositoryInterface;
+use App\Services\Management\Roles\RoleDataTableService;
+use App\Services\Management\Roles\RoleService;
+use App\Support\Http\ManagementRedirect;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Permission;
-use App\Models\Role;
 
 class RolesController extends Controller
 {
     public function __construct(
         private readonly RoleDataTableService $roleDataTableService,
         private readonly RoleService $roleService,
-    ) 
-    {
+        private readonly RoleRepositoryInterface $roles,
+        private readonly PermissionRepositoryInterface $permissions,
+    ) {
         $this->middleware(['auth', 'verified']);
         $this->middleware('can:roles.read')->only(['index', 'fetchData', 'show', 'roleList']);
         $this->middleware('can:roles.create')->only('store');
@@ -40,12 +44,10 @@ class RolesController extends Controller
 
     public function roleList(): JsonResponse
     {
-        $roles = Role::query()
-            ->orderBy('name')
-            ->get()
+        $roles = $this->roles->allOrderedByName()
             ->map(static fn (Role $role): array => [
-                'id'    => $role->id,
-                'name'  => $role->name,
+                'id' => $role->id,
+                'name' => $role->name,
                 'label' => ucfirst($role->name),
             ]);
 
@@ -58,70 +60,37 @@ class RolesController extends Controller
     {
         $data = $request->validated();
 
-        try {
-            $this->roleService->create($data);
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'message' => 'Error creating role.',
-            ]);
-        }
-
-        return back();
+        return ManagementRedirect::backAfter(
+            fn () => $this->roleService->create($data),
+            'Error creating role.',
+        );
     }
 
     public function show(Role $role): JsonResponse
     {
-        $role->load('permissions');
+        $payload = RoleEditPresenter::forShowJson(
+            $role,
+            $this->permissions->allOrderedByGroupAndName(),
+        );
 
-        $permissions = Permission::query()
-            ->orderBy('group')
-            ->orderBy('name')
-            ->get()
-            ->map(static function (Permission $permission): array {
-                return [
-                    'id'         => $permission->id,
-                    'name'       => $permission->name,
-                    'group'      => $permission->group,
-                    'guard_name' => $permission->guard_name,
-                ];
-            });
-
-        return response()->json([
-            'role'        => [
-                'id'          => $role->id,
-                'name'        => $role->name,
-                'guard_name'  => $role->guard_name,
-                'permissions' => $role->permissions->pluck('id')->values(),
-            ],
-            'permissions' => $permissions,
-        ]);
+        return response()->json($payload);
     }
 
     public function update(RoleUpdateRequest $request, Role $role)
     {
         $data = $request->validated();
 
-        try {
-            $this->roleService->update($role, $data);
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'message' => 'Error updating role.',
-            ]);
-        }
-
-        return back();
+        return ManagementRedirect::backAfter(
+            fn () => $this->roleService->update($role, $data),
+            'Error updating role.',
+        );
     }
 
     public function destroy(Role $role)
     {
-        try {
-            $this->roleService->delete($role);
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'message' => 'Error deleting role.',
-            ]);
-        }
-
-        return back();
+        return ManagementRedirect::backAfter(
+            fn () => $this->roleService->delete($role),
+            'Error deleting role.',
+        );
     }
 }
