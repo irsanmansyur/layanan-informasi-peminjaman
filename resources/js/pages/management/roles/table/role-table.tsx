@@ -25,8 +25,8 @@ export default function RoleTable() {
                 <div className="space-y-1">
                     <CardTitle>Roles</CardTitle>
                     <CardDescription>
-                        Kelola roles dan pengaturan permissions yang digunakan untuk
-                        mengatur akses fitur aplikasi.
+                        Manage roles and permission settings used to control
+                        access to application features.
                     </CardDescription>
                 </div>
             </CardHeader>

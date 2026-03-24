@@ -79,21 +79,21 @@ export function RoleRowActions({
                             <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                                 <Trash2Icon />
                             </AlertDialogMedia>
-                            <AlertDialogTitle>Hapus role?</AlertDialogTitle>
+                            <AlertDialogTitle>Delete role?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 Role &quot;
                                 {role.name}
-                                &quot; akan dihapus secara permanen. Tindakan ini tidak
-                                dapat dibatalkan.
+                                &quot; will be permanently deleted. This action cannot be
+                                undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 variant="destructive"
                                 onClick={() => onDelete(role)}
                             >
-                                Hapus
+                                Delete
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

@@ -11,28 +11,32 @@ export default function VerifyEmail({ status }: { status?: string }) {
     return (
         <AuthLayout
             title="Verify email"
-            description="Please verify your email address by clicking on the link we just emailed to you."
+            description="Open the verification link we just sent to your email inbox."
         >
-            <Head title="Email verification" />
+            <Head title="Verify email" />
 
             {status === 'verification-link-sent' && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mb-6 text-center text-sm font-medium text-success">
                     A new verification link has been sent to the email address
-                    you provided during registration.
+                    you used during registration.
                 </div>
             )}
 
-            <Form {...send.form()} className="space-y-6 text-center">
+            <Form {...send.form()} className="space-y-6 text-center sm:text-left">
                 {({ processing }) => (
                     <>
-                        <Button disabled={processing} variant="secondary">
+                        <Button
+                            disabled={processing}
+                            variant="secondary"
+                            className="w-full sm:w-auto"
+                        >
                             {processing && <Spinner />}
                             Resend verification email
                         </Button>
 
                         <TextLink
                             href={logout()}
-                            className="mx-auto block text-sm"
+                            className="mx-auto block text-sm sm:mx-0"
                         >
                             Log out
                         </TextLink>

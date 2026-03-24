@@ -73,7 +73,7 @@ function useRolePermissionMatrix(
 
                     if (!response.ok) {
                         throw new Error(
-                            `Gagal memuat data role (status ${response.status})`,
+                            `Failed to load role data (status ${response.status})`,
                         );
                     }
 
@@ -90,7 +90,7 @@ function useRolePermissionMatrix(
 
                     if (!response.ok) {
                         throw new Error(
-                            `Gagal memuat daftar permission (status ${response.status})`,
+                            `Failed to load permission list (status ${response.status})`,
                         );
                     }
 
@@ -108,7 +108,7 @@ function useRolePermissionMatrix(
 
                 console.error('Error fetching permissions for role form:', err);
                 setError(
-                    'Gagal memuat data permission. Silakan muat ulang halaman ini.',
+                    'Failed to load permission data. Please reload this page.',
                 );
             } finally {
                 if (isMounted) {
@@ -207,10 +207,10 @@ export function RoleFormDialog({
         return true;
     }, [formState.name, matrixLoading, submitting]);
 
-    const dialogTitle = isEdit ? 'Edit role' : 'Tambah role';
+    const dialogTitle = isEdit ? 'Edit role' : 'Create role';
     const dialogDescription = isEdit
-        ? 'Perbarui nama role dan atur ulang permissions yang dimilikinya.'
-        : 'Buat role baru dan atur permissions yang sesuai.';
+        ? 'Update the role name and reconfigure its permissions.'
+        : 'Create a new role and assign the appropriate permissions.';
 
     const handleChange =
         (field: keyof RoleFormState) =>
@@ -265,8 +265,8 @@ export function RoleFormDialog({
                     }}
                     onSuccess={() => {
                         const successMessage = isEdit
-                            ? `Role "${formState.name}" berhasil diperbarui.`
-                            : `Role "${formState.name}" berhasil dibuat.`;
+                            ? `Role "${formState.name}" was updated successfully.`
+                            : `Role "${formState.name}" was created successfully.`;
 
                         toast.success(successMessage);
 
@@ -292,7 +292,7 @@ export function RoleFormDialog({
                         setErrors(nextErrors);
 
                         toast.error(
-                            'Gagal menyimpan role. Silakan periksa kembali data yang diisi.',
+                            'Failed to save role. Please review the form input.',
                         );
                     }}
                     transform={(data: Record<string, unknown>) => ({
@@ -349,7 +349,7 @@ export function RoleFormDialog({
                                         autoComplete="off"
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Kosongkan untuk menggunakan guard default
+                                        Leave blank to use the default guard
                                         &quot;web&quot;.
                                     </p>
                                     <InputError message={errors.guard_name} />
@@ -383,11 +383,11 @@ export function RoleFormDialog({
                             onClick={() => setOpen(false)}
                             disabled={submitting || isLoading}
                         >
-                            Batal
+                            Cancel
                         </Button>
                         <Button type="submit" disabled={!canSubmit || isLoading}>
                             {submitting && <Spinner className="mr-2 size-4" />}
-                            {isEdit ? 'Simpan perubahan' : 'Buat role'}
+                            {isEdit ? 'Save changes' : 'Create role'}
                         </Button>
                     </DialogFooter>
                 </Form>

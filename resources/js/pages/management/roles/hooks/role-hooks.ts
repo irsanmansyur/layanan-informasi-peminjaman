@@ -56,12 +56,12 @@ export function useRolesTableState(): UseRolesTableStateResult {
                 preserveScroll: true,
                 onSuccess: () => {
                     reloadTable();
-                    toast.success(`Role "${role.name}" berhasil dihapus.`);
+                    toast.success(`Role "${role.name}" was deleted successfully.`);
                 },
                 onError: (errors) => {
                     const message =
                         (errors?.message as string | undefined) ??
-                        'Terjadi kesalahan saat menghapus role. Silakan coba lagi.';
+                        'An error occurred while deleting role. Please try again.';
 
                     setActionError(message);
                     toast.error(message);

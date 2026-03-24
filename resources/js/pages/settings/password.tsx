@@ -50,10 +50,10 @@ export default function Password() {
                         ]}
                         resetOnSuccess
                         onSuccess={() => {
-                            toast.success('Password berhasil diperbarui.');
+                            toast.success('Password updated successfully.');
                         }}
                         onError={(errors) => {
-                            toast.error('Gagal memperbarui password. Periksa data yang diisi.');
+                            toast.error('Failed to update password. Please check the form input.');
 
                             if (errors.password) {
                                 passwordInput.current?.focus();

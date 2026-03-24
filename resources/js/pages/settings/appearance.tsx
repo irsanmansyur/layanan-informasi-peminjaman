@@ -27,7 +27,7 @@ export default function Appearance() {
                         title="Appearance settings"
                         description="Update your account's appearance settings"
                     />
-                    <AppearanceTabs />
+                    <AppearanceTabs variant="detailed" />
                 </div>
             </SettingsLayout>
         </AppLayout>

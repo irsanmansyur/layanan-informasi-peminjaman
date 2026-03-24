@@ -1,6 +1,5 @@
 # DataTable – Dokumentasi Penggunaan
-
-Komponen **DataTable** dipakai untuk menampilkan data berpaginated dengan fitur pencarian, filter, sort, export, dan seleksi baris. Data di-fetch dari backend via URL; filter/sort/pagination dikirim sebagai query string.
+Component **DataTable** dipakai untuk menampilkan data paginated dengan fitur pencarian, filter, sort, export, dan seleksi baris. Data di-fetch dari backend via URL; filter/sort/pagination dikirim sebagai query string.
 
 ---
 
@@ -9,7 +8,7 @@ Komponen **DataTable** dipakai untuk menampilkan data berpaginated dengan fitur 
 - [DataTable – Dokumentasi Penggunaan](#datatable--dokumentasi-penggunaan)
   - [Daftar isi](#daftar-isi)
   - [1. Contoh minimal](#1-contoh-minimal)
-  - [2. Props komponen DataTable](#2-props-komponen-datatable)
+  - [2. Props Component DataTable](#2-props-component-datatable)
   - [3. Definisi kolom (Column)](#3-definisi-kolom-column)
   - [4. Filter](#4-filter)
   - [5. Backend / API](#5-backend--api)
@@ -46,7 +45,7 @@ export function MyTable() {
 
 ---
 
-## 2. Props komponen DataTable
+## 2. Props Component DataTable
 
 | Prop                                                              | Tipe                                          | Default             | Keterangan                                                                             |
 | ----------------------------------------------------------------- | --------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------- |
@@ -380,9 +379,9 @@ import { MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 
 ## File terkait
 
-- **Komponen:** `@/components/datatables.tsx` – komponen utama.
+- **Component:** `@/components/datatables.tsx` – component utama.
 - **Hook:** `@/hooks/use-datatables.tsx` – state fetch, sort, filter, pagination, selection.
-- **Subkomponen:** `@/components/datatables/filters.tsx`, `@/components/datatables/pagination.tsx`.
+- **Sub Component:** `@/components/datatables/filters.tsx`, `@/components/datatables/pagination.tsx`.
 - **Tipe:** `@/types/datatables.ts` – `DataTableRow`, `Column`, `Filter`, `FilterParams`, `PaginatedData`, `DataTableProps`, dll.
 - **Konfigurasi:** `@/config/datatables.ts` – konstanta debounce.
 

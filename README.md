@@ -1,10 +1,10 @@
 # Laravel Inertia Starter Kit
 
-Project ini paket awal buat aplikasi admin pakai Laravel + React (Inertia). Udah ada user, role, permission, sama activity log. Bisa dipake buat mulai project baru atau buat belajar.
+Project ini digunakan untuk aplikasi admin pakai Laravel + React (Inertia). Udah ada user, role, permission, sama activity log. Bisa dipake buat mulai project baru atau buat belajar.
 
 ## Persyaratan
 
-Butuh PHP 8.2+, Composer, sama Node.js (LTS cukup). Database default SQLite; kalau mau pake MySQL/PostgreSQL tinggal atur di `.env`.
+Stack: **Laravel 13** (butuh **PHP 8.4**), Composer, sama Node.js (LTS cukup). Database default SQLite; kalau mau pake MySQL/PostgreSQL tinggal atur di `.env`.
 
 ## Pasang project
 
@@ -42,13 +42,13 @@ Di terminal lain jalanin server Laravel:
 php artisan serve
 ```
 
-Terus buka http://localhost:8000.
+Terus buka [http://localhost:8000](http://localhost:8000).
 
 ## Login pertama
 
 Setelah seed, bisa login pake akun admin:
 
-- Email: **admin@app.com**
+- Email: **[admin@app.com](mailto:admin@app.com)**
 - Password: **rahasia!**
 
 (Ganti password ini kalo mau dipake beneran.)
@@ -117,26 +117,26 @@ PM2 buat jaga proses Node (SSR) sama queue worker tetep jalan. Contoh `ecosystem
 
 ```js
 module.exports = {
-  apps: [
-    {
-      name: 'inertia-ssr',
-      script: 'php',
-      args: 'artisan inertia:start-ssr',
-      cwd: '/path/to/project',
-      interpreter: 'none',
-      instances: 1,
-      autorestart: true,
-      watch: false,
-    },
-    {
-      name: 'queue',
-      script: 'php',
-      args: 'artisan queue:work --tries=3',
-      cwd: '/path/to/project',
-      interpreter: 'none',
-      autorestart: true,
-    },
-  ],
+    apps: [
+        {
+            name: 'inertia-ssr',
+            script: 'php',
+            args: 'artisan inertia:start-ssr',
+            cwd: '/path/to/project',
+            interpreter: 'none',
+            instances: 1,
+            autorestart: true,
+            watch: false,
+        },
+        {
+            name: 'queue',
+            script: 'php',
+            args: 'artisan queue:work --tries=3',
+            cwd: '/path/to/project',
+            interpreter: 'none',
+            autorestart: true,
+        },
+    ],
 };
 ```
 
@@ -162,4 +162,4 @@ Lalu `supervisorctl reread`, `supervisorctl update`, `supervisorctl start larave
 
 ## Dokumentasi
 
-- **[DataTable (frontend)](resources/js/components/datatables/README.md)** — Cara pake komponen tabel (search, filter, sort, pagination, export) di halaman React.
+- **[DataTable (frontend)](resources/js/components/datatables/README.md)** — Cara pake component tabel (search, filter, sort, pagination, export) di halaman React.

@@ -1,5 +1,5 @@
 import { ChevronDown, Download } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useDataTable } from '@/hooks/use-datatables';
 import { cn } from '@/lib/utils';
 import type { Column, DataTableExportFormat, DataTableProps, DataTableRow } from '@/types/datatables';
@@ -39,6 +39,16 @@ export function DataTable<T extends DataTableRow>({
     emptyContent,
     searchDebounceMs,
 }: DataTableProps<T>) {
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+    const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+
+    const boxedRowCellClass =
+        'bg-background first:rounded-l-lg last:rounded-r-lg';
+    const headerCellClass =
+        'h-13 px-3 first:pl-4 last:pr-4';
+    const checkboxHeaderCellClass = 'h-13 w-11 px-2 first:pl-2';
+    const checkboxBodyCellClass = 'w-11 px-2';
+
     const {
         data,
         loading,
@@ -180,6 +190,13 @@ export function DataTable<T extends DataTableRow>({
     const headerCheckboxState: boolean | 'indeterminate' =
         allSelected ? true : hasAnySelection ? 'indeterminate' : false;
 
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        setIsHeaderScrolled(container.scrollTop > 0);
+    }, [data?.data.length, loading]);
+
     return (
         <div className={cn('space-y-4', className)}>
             <TableFilters
@@ -199,15 +216,51 @@ export function DataTable<T extends DataTableRow>({
                     ) : undefined
                 }
             />
-            <div className="overflow-x-auto rounded-md border border-border max-h-[calc(100vh-300px)]">
-                                <Table custom className={cn('data-table w-full', tableClassName)}>
-                                    <TableHeader className={cn('text-primary-foreground sticky top-0 bg-muted', headerClassName)}>
+            <div className="overflow-hidden rounded-xl">
+                <div
+                    ref={scrollContainerRef}
+                    className="relative max-h-[calc(100vh-320px)] overflow-auto rounded-xl"
+                    onScroll={(event) => {
+                        setIsHeaderScrolled(event.currentTarget.scrollTop > 0);
+                    }}
+                >
+                                <Table
+                                    custom
+                                    className={cn(
+                                        'data-table w-full border-separate [border-spacing:0_8px]',
+                                        tableClassName,
+                                    )}
+                                >
+                        <TableHeader
+                            className={cn(
+                                'sticky top-0 z-40 isolate rounded-t-xl border-b border-primary/25 transition-all duration-300',
+                                isHeaderScrolled && 'shadow-[0_10px_24px_-18px_rgba(0,0,0,0.55)]',
+                                '[&_tr:hover]:bg-transparent',
+                                '[&_tr:first-child_th:first-child]:rounded-tl-xl [&_tr:first-child_th:last-child]:rounded-tr-xl',
+                                '[&_th]:text-xs [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase [&_th]:text-foreground [&_th]:align-middle shadow-sm ',
+
+                                // Glass effect
+                                '[&_th]:relative [&_th]:z-1',
+                                '[&_th]:bg-background [&_th]:backdrop-blur-md',
+
+                                // Saat discroll: makin solid & blur makin kua  t
+                                isHeaderScrolled && '[&_th]:bg-background [&_th]:backdrop-blur-md',
+
+                                headerClassName,
+                            )}
+                        >
+
                                         <TableRow>
                                             {selectable && (
-                                                <TableHead className="w-6 md:w-auto">
-                                                    <div className="flex w-6 items-center md:w-auto">
+                                                <TableHead
+                                                    className={cn(
+                                                        checkboxHeaderCellClass,
+                                                    )}
+                                                >
+                                                    <div className="flex w-6 items-center">
                                                         <Checkbox
                                                             checked={headerCheckboxState}
+                                                            className="size-3.5 border-foreground/30 bg-background/65 shadow-none data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                                             onCheckedChange={(checked: boolean) => {
                                                                 const newSelection = handleSelectAll(
                                                                     checked,
@@ -226,7 +279,11 @@ export function DataTable<T extends DataTableRow>({
                                                 return (
                                                     <TableHead
                                                         key={column.key.toString()}
-                                                        className={cn(breakpointClass, column.headerClassName, 'h-14')}
+                                                        className={cn(
+                                                            breakpointClass,
+                                                            headerCellClass,
+                                                            column.headerClassName,
+                                                        )}
                                                     >
                                                         <div
                                                             className={cn(column.className, !column.className?.includes('w-') ? 'w-40' : '', 'md:w-auto')}
@@ -257,6 +314,7 @@ export function DataTable<T extends DataTableRow>({
                                                 <TableHead
                                                     className={cn(
                                                         'text-center',
+                                                        headerCellClass,
                                                         actionColumn?.className,
                                                     )}
                                                 >
@@ -283,7 +341,12 @@ export function DataTable<T extends DataTableRow>({
                                                     {Array.from({ length: 5 }).map((_, rowIndex) => (
                                                         <TableRow key={rowIndex}>
                                                             {selectable && (
-                                                                <TableCell className="px-2">
+                                                                <TableCell
+                                                                    className={cn(
+                                                                        checkboxBodyCellClass,
+                                                                        boxedRowCellClass,
+                                                                    )}
+                                                                >
                                                                     <Skeleton className="h-4 w-4" />
                                                                 </TableCell>
                                                             )}
@@ -292,14 +355,22 @@ export function DataTable<T extends DataTableRow>({
                                                                 return (
                                                                     <TableCell
                                                                         key={column.key.toString()}
-                                                                        className={cn(breakpointClass)}
+                                                                        className={cn(
+                                                                            breakpointClass,
+                                                                            boxedRowCellClass,
+                                                                        )}
                                                                     >
                                                                         <Skeleton className="h-4 w-full" />
                                                                     </TableCell>
                                                                 );
                                                             })}
                                                             {activeActions && (
-                                                                <TableCell className="text-center">
+                                                                <TableCell
+                                                                    className={cn(
+                                                                        'text-center',
+                                                                        boxedRowCellClass,
+                                                                    )}
+                                                                >
                                                                     <Skeleton className="mx-auto h-4 w-16" />
                                                                 </TableCell>
                                                             )}
@@ -311,14 +382,30 @@ export function DataTable<T extends DataTableRow>({
                                             data.data.map((row, index) => (
                                                 <TableRow
                                                     key={row.id || index}
-                                                    className={rowClassName ? rowClassName(row, index) : undefined}
+                                                    className={cn(
+                                                        'hover:bg-transparent',
+                                                        '[&>td]:transition-colors [&>td]:duration-150',
+                                                        'hover:[&>td]:bg-primary/5',
+                                                        rowClassName
+                                                            ? rowClassName(
+                                                                  row,
+                                                                  index,
+                                                              )
+                                                            : undefined,
+                                                    )}
                                                 >
                                                     {selectable && (
-                                                        <TableCell className="px-2">
+                                                        <TableCell
+                                                            className={cn(
+                                                                checkboxBodyCellClass,
+                                                                boxedRowCellClass,
+                                                            )}
+                                                        >
                                                             <div className="flex w-6 items-center md:w-auto">
                                                                 {isRowSelectable(row) && (
                                                                     <Checkbox
                                                                         checked={isRowSelected(row)}
+                                                                        className="size-3.5 border-border/50 shadow-none"
                                                                         onCheckedChange={() => {
                                                                             const newSelection = handleSelectRow(row);
                                                                             onSelectionChange?.(newSelection);
@@ -335,7 +422,11 @@ export function DataTable<T extends DataTableRow>({
                                                         return (
                                                             <TableCell
                                                                 key={column.key.toString()}
-                                                                className={cn(breakpointClass, column.cellClassName)}
+                                                                className={cn(
+                                                                    breakpointClass,
+                                                                    boxedRowCellClass,
+                                                                    column.cellClassName,
+                                                                )}
                                                             >
                                                                 {column.render
                                                                     ? column.render(row)
@@ -347,6 +438,7 @@ export function DataTable<T extends DataTableRow>({
                                                         <TableCell
                                                             className={cn(
                                                                 'text-center',
+                                                                boxedRowCellClass,
                                                                 actionColumn?.cellClassName,
                                                             )}
                                                             data-action-cell="true"
@@ -362,16 +454,17 @@ export function DataTable<T extends DataTableRow>({
                                                     colSpan={
                                                         columns.length + (selectable ? 1 : 0) + (activeActions ? 1 : 0)
                                                     }
-                                                    className="py-8 text-center"
+                                                    className="py-10 text-center"
                                                 >
                                                     {emptyContent ?? (
-                                                        <p className="text-muted-foreground">Data tidak ditemukan</p>
+                                                        <p className="text-muted-foreground">No data found</p>
                                                     )}
                                                 </TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
                                 </Table>
+                </div>
             </div>
             {data && (
                 <TablePagination

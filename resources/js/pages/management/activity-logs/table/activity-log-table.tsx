@@ -35,7 +35,7 @@ export default function ActivityLogTable() {
         },
         {
             key: 'subject_type',
-            label: 'Modul',
+            label: 'Module',
             options: [
                 { label: 'User', value: 'User' },
                 { label: 'Role', value: 'Role' },
@@ -50,7 +50,7 @@ export default function ActivityLogTable() {
             <CardHeader>
                 <CardTitle>Activity Logs</CardTitle>
                 <CardDescription>
-                    Riwayat aktivitas pengguna dalam sistem. Anda dapat memantau perubahan data dan aktivitas login.
+                    User activity history in the system. You can monitor data changes and login activity.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -60,7 +60,7 @@ export default function ActivityLogTable() {
                     dataPath="logs"
                     filters={filters}
                     searchDebounceMs={ACTIVITY_LOG_DATA_TABLE_SEARCH_DEBOUNCE_MS}
-                    searchPlaceholder="Cari deskripsi, modul, subject, atau causer (nama/email)…"
+                    searchPlaceholder="Search description, module, subject, or causer (name/email)…"
                     searchableColumns={activityLogSearchableColumns}
                     defaultSort={{
                         key: 'created_at',
@@ -71,13 +71,13 @@ export default function ActivityLogTable() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleViewDetails(log)}
-                            title="Lihat Detail"
+                            title="View details"
                         >
                             <Eye className="h-4 w-4 text-muted-foreground hover:text-primary" />
                         </Button>
                     )}
                     actionColumn={{
-                        header: 'Detail',
+                        header: 'Details',
                         className: 'w-[80px]',
                     }}
                 />

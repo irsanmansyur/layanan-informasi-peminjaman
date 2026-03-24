@@ -64,7 +64,7 @@ export function UserTopActions({
                                 className="w-full md:w-auto"
                             >
                                 <Plus className="mr-2 size-4" />
-                                Tambah user
+                                Add user
                             </Button>
                         }
                     />
@@ -103,7 +103,7 @@ function BulkActions({
                     ) : (
                         <Trash2Icon className="mr-2 size-4" />
                     )}
-                    Hapus terpilih ({selectedCount})
+                    Delete selected ({selectedCount})
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent size="sm">
@@ -111,18 +111,15 @@ function BulkActions({
                     <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                         <Trash2Icon />
                     </AlertDialogMedia>
-                    <AlertDialogTitle>Hapus user terpilih?</AlertDialogTitle>
+                    <AlertDialogTitle>Delete selected users?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Sebanyak
-                        {' '}
-                        {selectedCount}
-                        {' '}
-                        user akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.
+                        {selectedCount} user(s) will be permanently deleted. This
+                        action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={bulkDeleting}>
-                        Batal
+                        Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         variant="destructive"
@@ -130,7 +127,7 @@ function BulkActions({
                         onClick={onBulkDelete}
                     >
                         {bulkDeleting && <Spinner className="mr-2 size-4" />}
-                        Hapus
+                        Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

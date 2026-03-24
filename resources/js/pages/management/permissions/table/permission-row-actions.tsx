@@ -79,21 +79,21 @@ export function PermissionRowActions({
                             <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                                 <Trash2Icon />
                             </AlertDialogMedia>
-                            <AlertDialogTitle>Hapus permission?</AlertDialogTitle>
+                            <AlertDialogTitle>Delete permission?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 Permission &quot;
                                 {permission.name}
-                                &quot; akan dihapus secara permanen. Tindakan ini tidak dapat
-                                dibatalkan.
+                                &quot; will be permanently deleted. This action cannot be
+                                undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 variant="destructive"
                                 onClick={() => onDelete(permission)}
                             >
-                                Hapus
+                                Delete
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

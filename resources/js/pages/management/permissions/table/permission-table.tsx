@@ -1,8 +1,8 @@
 import React from 'react';
 import { DataTable } from '@/components/datatables';
-import { MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
+import { MANAGEMENT_DATA_TABLE_SEARCH_DEBOUNCE_MS } from '@/config/datatables';
 import { usePermissions } from '@/hooks/use-permissions';
 import permissionsRoutes from '@/routes/permissions';
 import { usePermissionFilters, usePermissionsTableState } from '../hooks/permission-hooks';
@@ -27,7 +27,7 @@ export default function PermissionTable() {
                 <div className="space-y-1">
                     <CardTitle>Permissions</CardTitle>
                     <CardDescription>
-                        Kelola daftar permission yang digunakan untuk mengatur akses fitur aplikasi.
+                        Manage the permission list used to control access to application features.
                     </CardDescription>
                 </div>
             </CardHeader>
@@ -35,7 +35,7 @@ export default function PermissionTable() {
                 {filtersLoading && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Spinner className="size-4" />
-                        <span>Memuat filter permission...</span>
+                        <span>Loading permission filters...</span>
                     </div>
                 )}
                 <DataTable<ManagementPermission>

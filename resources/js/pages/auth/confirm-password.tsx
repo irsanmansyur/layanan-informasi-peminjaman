@@ -10,8 +10,8 @@ import { store } from '@/routes/password/confirm';
 export default function ConfirmPassword() {
     return (
         <AuthLayout
-            title="Confirm your password"
-            description="This is a secure area of the application. Please confirm your password before continuing."
+            title="Confirm password"
+            description="This area is protected. Enter your password to continue."
         >
             <Head title="Confirm password" />
 
@@ -23,7 +23,7 @@ export default function ConfirmPassword() {
                             <PasswordInput
                                 id="password"
                                 name="password"
-                                placeholder="Password"
+                                placeholder="••••••••"
                                 autoComplete="current-password"
                                 autoFocus
                             />
@@ -37,7 +37,7 @@ export default function ConfirmPassword() {
                                 data-test="confirm-password-button"
                             >
                                 {processing && <Spinner />}
-                                Confirm password
+                                Confirm
                             </Button>
                         </div>
                     </div>

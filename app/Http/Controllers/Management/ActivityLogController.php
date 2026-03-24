@@ -14,7 +14,6 @@ class ActivityLogController extends Controller
     public function __construct(
         private readonly ActivityLogDataTableService $activityLogDataTableService,
     ) {
-        $this->middleware(['auth', 'verified']);
         $this->middleware('can:activity-logs.read')->only(['index', 'fetchData']);
     }
 

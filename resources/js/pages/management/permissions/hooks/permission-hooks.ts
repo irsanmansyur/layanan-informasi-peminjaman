@@ -40,7 +40,7 @@ export function usePermissionFilters(): UsePermissionFiltersResult {
 
                 if (!response.ok) {
                     throw new Error(
-                        `Gagal memuat daftar permission (status ${response.status})`,
+                        `Failed to load permission list (status ${response.status})`,
                     );
                 }
 
@@ -84,8 +84,8 @@ export function usePermissionFilters(): UsePermissionFiltersResult {
                 if (!isMounted) return;
 
                 console.error('Error fetching permissions list:', err);
-                setError('Gagal memuat daftar permission. Silakan coba lagi.');
-                toast.error('Gagal memuat daftar permission. Silakan coba lagi.');
+                setError('Failed to load permission list. Please try again.');
+                toast.error('Failed to load permission list. Please try again.');
             } finally {
                 if (isMounted) {
                     setLoading(false);
@@ -145,13 +145,13 @@ export function usePermissionsTableState(): UsePermissionsTableStateResult {
                 onSuccess: () => {
                     reloadTable();
                     toast.success(
-                        `Permission "${permission.name}" berhasil dihapus.`,
+                        `Permission "${permission.name}" was deleted successfully.`,
                     );
                 },
                 onError: (errors) => {
                     const message =
                         (errors?.message as string | undefined) ??
-                        'Terjadi kesalahan saat menghapus permission. Silakan coba lagi.';
+                        'An error occurred while deleting permission. Please try again.';
 
                     setActionError(message);
                     toast.error(message);

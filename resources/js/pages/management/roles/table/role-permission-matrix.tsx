@@ -188,7 +188,7 @@ export function RolePermissionMatrix({
 
                     {groups.length === 0 && (
                         <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                            Belum ada permission yang tersedia.
+                            No permissions are available yet.
                         </div>
                     )}
                 </div>

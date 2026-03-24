@@ -5,12 +5,12 @@ import type { ActivityLog } from '../types/activity-log-types';
 export const activityLogColumns: Column<ActivityLog>[] = [
     {
         key: 'description',
-        label: 'Aktivitas',
+        label: 'Activity',
         className: 'min-w-[200px]',
     },
     {
         key: 'subject_type',
-        label: 'Modul',
+        label: 'Module',
         className: 'w-[120px]',
         render: (log) => (
             <Badge variant="outline">{log.subject_type}</Badge>
@@ -35,7 +35,7 @@ export const activityLogColumns: Column<ActivityLog>[] = [
     },
     {
         key: 'event',
-        label: 'Aksi',
+        label: 'Action',
         className: 'w-[100px]',
         render: (log) => {
             if (!log.event) {
@@ -62,7 +62,7 @@ export const activityLogColumns: Column<ActivityLog>[] = [
     },
     {
         key: 'created_at',
-        label: 'Waktu',
+        label: 'Time',
         className: 'w-[180px]',
         render: (log) => (
             <div className="flex flex-col">
@@ -76,11 +76,11 @@ export const activityLogColumns: Column<ActivityLog>[] = [
 export const activityLogSearchableColumns: SearchableColumn[] = [
     {
         key: 'description',
-        label: 'Deskripsi',
+        label: 'Description',
     },
     {
         key: 'subject_type',
-        label: 'Modul',
+        label: 'Module',
     },
     {
         key: 'event',

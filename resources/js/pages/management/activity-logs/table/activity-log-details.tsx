@@ -26,7 +26,7 @@ export function ActivityLogDetails({
 
     const { properties, event, causer, created_at, description } = log;
 
-    // Helper untuk format value agar enak dibaca
+    // Helper to format values for readability
     const formatValue = (value: unknown) => {
         if (value === null) return <span className="text-muted-foreground italic">null</span>;
         if (value === true) return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">True</Badge>;
@@ -57,14 +57,14 @@ export function ActivityLogDetails({
                             </div>
                             <div className="grid grid-cols-1 gap-2 rounded-lg border bg-card p-3 shadow-sm md:grid-cols-[1fr_auto_1fr] md:items-center">
                                 <div className="space-y-1">
-                                    <div className="text-xs text-muted-foreground">Sebelum</div>
+                                    <div className="text-xs text-muted-foreground">Before</div>
                                     <div className="break-all">{formatValue(change.from)}</div>
                                 </div>
                                 <div className="flex justify-center py-2 md:py-0">
                                     <ArrowRight className="h-4 w-4 text-muted-foreground/50" />
                                 </div>
                                 <div className="space-y-1">
-                                    <div className="text-xs text-muted-foreground">Sesudah</div>
+                                    <div className="text-xs text-muted-foreground">After</div>
                                     <div className="break-all">{formatValue(change.to)}</div>
                                 </div>
                             </div>
@@ -94,7 +94,7 @@ export function ActivityLogDetails({
         if (properties.old) {
             return (
                 <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
-                    <div className="mb-3 text-sm font-medium text-destructive">Data yang dihapus:</div>
+                    <div className="mb-3 text-sm font-medium text-destructive">Deleted data:</div>
                     <div className="grid gap-3 sm:grid-cols-2">
                         {Object.entries(properties.old).map(([key, value]) => (
                             <div key={key} className="rounded-md bg-background/50 p-2">
@@ -114,7 +114,7 @@ export function ActivityLogDetails({
         return (
             <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
                 <FileJson className="mb-2 h-8 w-8 opacity-20" />
-                <p>Tidak ada detail perubahan yang tercatat.</p>
+                <p>No change details were recorded.</p>
             </div>
         );
     };
@@ -143,7 +143,7 @@ export function ActivityLogDetails({
                     <div className="flex items-center gap-4">
                         <div className="space-y-1">
                             <DialogTitle className="flex items-center gap-2 text-xl">
-                                <span>Detail Aktivitas</span>
+                                <span>Activity details</span>
                                 <Badge variant="outline" className={cn("capitalize", getEventColor(event))}>
                                     {event.replace('_', ' ')}
                                 </Badge>

@@ -44,7 +44,7 @@ export default function UserTable() {
                 {rolesLoading && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Spinner className="size-4" />
-                        <span>Memuat daftar role...</span>
+                        <span>Loading role list...</span>
                     </div>
                 )}
                 <DataTable<ManagementUser>

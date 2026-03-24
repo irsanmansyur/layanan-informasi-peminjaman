@@ -66,7 +66,7 @@ function useUserRoleOptions(enabled: boolean) {
                 const response = await fetch(rolesRoutes.list().url);
 
                 if (!response.ok) {
-                    throw new Error(`Gagal memuat roles (status ${response.status})`);
+                    throw new Error(`Failed to load roles (status ${response.status})`);
                 }
 
                 const data = (await response.json()) as RoleResponse;
@@ -82,7 +82,7 @@ function useUserRoleOptions(enabled: boolean) {
             } catch (err) {
                 if (!isMounted) return;
                 console.error('Error fetching roles list for form:', err);
-                setError('Gagal memuat daftar role. Silakan coba lagi.');
+                setError('Failed to load role list. Please try again.');
             } finally {
                 if (isMounted) {
                     setLoading(false);
@@ -118,10 +118,10 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
     const { options: roleOptions, loading: rolesLoading } = useUserRoleOptions(open);
     const isEditLoading = isEdit && (!editSkeletonDelayDone || rolesLoading);
 
-    const dialogTitle = isEdit ? 'Edit user' : 'Tambah user';
+    const dialogTitle = isEdit ? 'Edit user' : 'Create user';
     const dialogDescription = isEdit
-        ? 'Perbarui informasi user dan atur roles yang sesuai.'
-        : 'Buat user baru dan atur roles serta kredensial awalnya.';
+        ? 'Update user information and assign the appropriate roles.'
+        : 'Create a new user and set roles and initial credentials.';
 
     useEffect(() => {
         if (!isEdit || !open) {
@@ -197,8 +197,8 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
             };
 
     const passwordHint = isEdit
-        ? 'Opsional. Kosongkan jika tidak ingin mengubah password.'
-        : 'Gunakan kombinasi huruf, angka, dan simbol untuk keamanan yang lebih baik.';
+        ? 'Optional. Leave blank if you do not want to change the password.'
+        : 'Use a combination of letters, numbers, and symbols for better security.';
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -235,8 +235,8 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                     onSuccess={() => {
                         const successMessage =
                             mode === 'create'
-                                ? `User "${formState.name}" berhasil dibuat.`
-                                : `User "${formState.name}" berhasil diperbarui.`;
+                                ? `User "${formState.name}" was created successfully.`
+                                : `User "${formState.name}" was updated successfully.`;
 
                         toast.success(successMessage);
 
@@ -261,7 +261,7 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
 
                         setErrors(nextErrors);
 
-                        toast.error('Gagal menyimpan user. Silakan periksa kembali data yang diisi.');
+                        toast.error('Failed to save user. Please review the form input.');
                     }}
                     transform={(data: Record<string, unknown>) => ({
                         ...data,
@@ -315,7 +315,7 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                                             value={formState.name}
                                             onChange={handleChange('name')}
                                             className="pl-9"
-                                            placeholder="Nama lengkap user"
+                                            placeholder="User full name"
                                             autoComplete="name"
                                         />
                                     </div>
@@ -351,7 +351,7 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                                             value={formState.password}
                                             onChange={handleChange('password')}
                                             autoComplete="new-password"
-                                            placeholder={isEdit ? 'Password baru (opsional)' : 'Password'}
+                                            placeholder={isEdit ? 'New password (optional)' : 'Password'}
                                             visible={passwordVisible}
                                             onVisibleChange={setPasswordVisible}
                                         />
@@ -359,14 +359,14 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="password_confirmation">Konfirmasi Password</Label>
+                                        <Label htmlFor="password_confirmation">Confirm password</Label>
                                         <PasswordInput
                                             id="password_confirmation"
                                             name="password_confirmation"
                                             value={formState.password_confirmation}
                                             onChange={handleChange('password_confirmation')}
                                             autoComplete="new-password"
-                                            placeholder={isEdit ? 'Ulangi password baru' : 'Ulangi password'}
+                                            placeholder={isEdit ? 'Repeat new password' : 'Repeat password'}
                                             visible={passwordVisible}
                                             onVisibleChange={setPasswordVisible}
                                             showToggle={false}
@@ -390,12 +390,12 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
                                             options={roleOptions}
                                             value={selectedRoles}
                                             onValueChange={setSelectedRoles}
-                                            placeholder="Pilih satu atau lebih role"
+                                            placeholder="Select one or more roles"
                                             maxCount={5}
                                             className="justify-between"
                                         >
                                             <ShieldCheck className="mr-2 size-4" />
-                                            <span>Pilih roles</span>
+                                            <span>Select roles</span>
                                         </MultiSelect>
                                     )}
                                     <InputError message={errors.roles} />
@@ -410,11 +410,11 @@ export function UserFormDialog({ mode, trigger, user, onSuccess }: UserFormDialo
 
                     <DialogFooter className="gap-2">
                         <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
-                            Batal
+                            Cancel
                         </Button>
                         <Button type="submit" disabled={!canSubmit}>
                             {submitting && <Spinner className="mr-2 size-4" />}
-                            {isEdit ? 'Simpan perubahan' : 'Buat user'}
+                            {isEdit ? 'Save changes' : 'Create user'}
                         </Button>
                     </DialogFooter>
                 </Form>

@@ -24,7 +24,7 @@ export function PermissionTopActions({ onCreated }: PermissionTopActionsProps) {
                 trigger={
                     <Button size="sm" className="w-full md:w-auto">
                         <Plus className="mr-2 size-4" />
-                        Tambah permission
+                        Add permission
                     </Button>
                 }
             />

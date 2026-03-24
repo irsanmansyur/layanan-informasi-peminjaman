@@ -49,10 +49,10 @@ export default function Profile({
                             preserveScroll: true,
                         }}
                         onSuccess={() => {
-                            toast.success('Profile berhasil diperbarui.');
+                            toast.success('Profile updated successfully.');
                         }}
                         onError={() => {
-                            toast.error('Gagal memperbarui profile. Periksa data yang diisi.');
+                            toast.error('Failed to update profile. Please check the form input.');
                         }}
                         className="space-y-6"
                     >

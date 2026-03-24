@@ -116,6 +116,7 @@ function NavItemNode({
                     asChild
                     isActive={isCurrentUrl(item.href)}
                     tooltip={{ children: item.title }}
+                    className="cursor-pointer"
                 >
                     <Link href={item.href} prefetch>
                         {item.icon && <item.icon />}
@@ -134,7 +135,7 @@ function NavItemNode({
                         <SidebarMenuButton
                             isActive={isCurrentUrl(item.href)}
                             tooltip={{ children: item.title }}
-                            className="group"
+                            className="group cursor-pointer"
                         >
                             {item.icon && <item.icon />}
                             <span>{item.title}</span>
@@ -162,6 +163,7 @@ function NavItemNode({
                                         <DropdownMenuItem
                                             key={child.title}
                                             asChild
+                                            className="cursor-pointer"
                                         >
                                             <Link
                                                 href={child.href ?? '#'}
@@ -175,7 +177,7 @@ function NavItemNode({
 
                                 return (
                                     <DropdownMenuSub key={child.title}>
-                                        <DropdownMenuSubTrigger>
+                                        <DropdownMenuSubTrigger className="cursor-pointer">
                                             <span>{child.title}</span>
                                         </DropdownMenuSubTrigger>
                                         <DropdownMenuSubContent>
@@ -184,6 +186,7 @@ function NavItemNode({
                                                     <DropdownMenuItem
                                                         key={grandChild.title}
                                                         asChild
+                                                        className="cursor-pointer"
                                                     >
                                                         <Link
                                                             href={
@@ -227,7 +230,7 @@ function NavItemNode({
                     <SidebarMenuButton
                         isActive={isCurrentUrl(item.href)}
                         tooltip={{ children: item.title }}
-                        className='min-h-7 h-auto'
+                        className="min-h-7 h-auto cursor-pointer"
                     >
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
@@ -235,7 +238,7 @@ function NavItemNode({
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
 
-                <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down cursor-pointer">
                     <SidebarMenuSub id={`submenu-${key}`} aria-label={item.title}>
                         {item.children?.map((child) => {
                             const childHasChildren =
@@ -247,6 +250,7 @@ function NavItemNode({
                                         <SidebarMenuSubButton
                                             asChild
                                             isActive={isCurrentUrl(child.href)}
+                                            className="cursor-pointer"
                                         >
                                             <Link href={child.href} prefetch>
                                                 {child.icon && <child.icon />}
@@ -295,6 +299,7 @@ function NavItemNode({
                                                             isActive={isCurrentUrl(
                                                                 grandChild.href,
                                                             )}
+                                                            className="cursor-pointer"
                                                         >
                                                             <Link
                                                                 href={grandChild.href}
@@ -350,8 +355,10 @@ export function NavMain({ group }: NavMainProps) {
     };
 
     return (
-        <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+        <SidebarGroup className="px-2 py-0 group-data-[collapsible=icon]:px-0.5 group-data-[collapsible=icon]:py-0">
+            <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {group.title}
+            </SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item: NavItemWithDepth) => (
                     <NavItemNode

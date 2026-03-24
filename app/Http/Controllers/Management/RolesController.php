@@ -25,7 +25,6 @@ class RolesController extends Controller
         private readonly RoleRepositoryInterface $roles,
         private readonly PermissionRepositoryInterface $permissions,
     ) {
-        $this->middleware(['auth', 'verified']);
         $this->middleware('can:roles.read')->only(['index', 'fetchData', 'show', 'roleList']);
         $this->middleware('can:roles.create')->only('store');
         $this->middleware('can:roles.update')->only('update');

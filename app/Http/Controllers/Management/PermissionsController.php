@@ -22,7 +22,6 @@ class PermissionsController extends Controller
         private readonly PermissionService $permissionService,
         private readonly PermissionRepositoryInterface $permissions,
     ) {
-        $this->middleware(['auth', 'verified']);
         $this->middleware('can:permissions.read')->only(['index', 'fetchData', 'permissionList']);
         $this->middleware('can:permissions.create')->only('store');
         $this->middleware('can:permissions.update')->only('update');

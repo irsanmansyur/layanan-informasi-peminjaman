@@ -19,7 +19,7 @@ export default function ResetPassword({ token, email }: Props) {
     return (
         <AuthLayout
             title="Reset password"
-            description="Please enter your new password below"
+            description="Enter a new password for your account"
         >
             <Head title="Reset password" />
 
@@ -48,14 +48,14 @@ export default function ResetPassword({ token, email }: Props) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">New password</Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder="••••••••"
                                 visible={passwordVisible}
                                 onVisibleChange={setPasswordVisible}
                             />
@@ -71,7 +71,7 @@ export default function ResetPassword({ token, email }: Props) {
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Confirm password"
+                                placeholder="Repeat password"
                                 visible={passwordVisible}
                                 onVisibleChange={setPasswordVisible}
                                 showToggle={false}
@@ -84,12 +84,12 @@ export default function ResetPassword({ token, email }: Props) {
 
                         <Button
                             type="submit"
-                            className="mt-4 w-full"
+                            className="mt-2 w-full"
                             disabled={processing}
                             data-test="reset-password-button"
                         >
                             {processing && <Spinner />}
-                            Reset password
+                            Save password
                         </Button>
                     </div>
                 )}

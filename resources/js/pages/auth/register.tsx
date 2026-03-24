@@ -15,10 +15,10 @@ export default function Register() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     return (
         <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
+            title="Create a new account"
+            description="Fill in the form below to sign up"
         >
-            <Head title="Register" />
+            <Head title="Sign up" />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -47,7 +47,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -55,7 +55,7 @@ export default function Register() {
                                     tabIndex={2}
                                     autoComplete="email"
                                     name="email"
-                                    placeholder="email@example.com"
+                                    placeholder="john@example.com"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -67,7 +67,7 @@ export default function Register() {
                                     name="password"
                                     required
                                     tabIndex={3}
-                                    placeholder="Password"
+                                    placeholder="Create a password"
                                     autoComplete="new-password"
                                     visible={passwordVisible}
                                     onVisibleChange={setPasswordVisible}
@@ -84,7 +84,7 @@ export default function Register() {
                                     name="password_confirmation"
                                     required
                                     tabIndex={4}
-                                    placeholder="Confirm password"
+                                    placeholder="Repeat password"
                                     autoComplete="new-password"
                                     visible={passwordVisible}
                                     onVisibleChange={setPasswordVisible}
@@ -102,14 +102,14 @@ export default function Register() {
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
-                                Create account
+                                Sign up
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={6}>
-                                Log in
+                                Sign in
                             </TextLink>
                         </div>
                     </>

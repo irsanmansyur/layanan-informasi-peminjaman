@@ -12,14 +12,17 @@ import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 export function Breadcrumbs({
     breadcrumbs,
+    listClassName,
 }: {
     breadcrumbs: BreadcrumbItemType[];
+    /** Merged into BreadcrumbList (e.g. larger type in app header). */
+    listClassName?: string;
 }) {
     return (
         <>
             {breadcrumbs.length > 0 && (
                 <Breadcrumb>
-                    <BreadcrumbList>
+                    <BreadcrumbList className={listClassName}>
                         {breadcrumbs.map((item, index) => {
                             const isLast = index === breadcrumbs.length - 1;
                             return (

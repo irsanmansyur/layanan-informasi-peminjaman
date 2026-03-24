@@ -74,20 +74,20 @@ export function UserRowActions({ user, deletingId, onDelete, onUpdated }: UserRo
                             <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                                 <Trash2Icon />
                             </AlertDialogMedia>
-                            <AlertDialogTitle>Hapus user?</AlertDialogTitle>
+                            <AlertDialogTitle>Delete user?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 User &quot;
                                 {user.name}
-                                &quot; akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.
+                                &quot; will be permanently deleted. This action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 variant="destructive"
                                 onClick={() => onDelete(user)}
                             >
-                                Hapus
+                                Delete
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

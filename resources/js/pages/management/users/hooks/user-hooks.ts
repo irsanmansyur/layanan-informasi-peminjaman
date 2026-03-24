@@ -37,7 +37,7 @@ export function useRoleFilters(): UseRoleFiltersResult {
                 const response = await fetch(roles.list().url);
 
                 if (!response.ok) {
-                    throw new Error(`Gagal memuat roles (status ${response.status})`);
+                    throw new Error(`Failed to load roles (status ${response.status})`);
                 }
 
                 const data = (await response.json()) as RoleResponse;
@@ -53,8 +53,8 @@ export function useRoleFilters(): UseRoleFiltersResult {
             } catch (err) {
                 if (!isMounted) return;
                 console.error('Error fetching roles list:', err);
-                setError('Gagal memuat daftar role. Silakan coba lagi.');
-                toast.error('Gagal memuat daftar role. Silakan coba lagi.');
+                setError('Failed to load role list. Please try again.');
+                toast.error('Failed to load role list. Please try again.');
             } finally {
                 if (isMounted) {
                     setLoading(false);
@@ -106,12 +106,12 @@ export function useUsersTableState(): UseUsersTableStateResult {
                 preserveScroll: true,
                 onSuccess: () => {
                     reloadTable();
-                    toast.success(`User "${user.name}" berhasil dihapus.`);
+                    toast.success(`User "${user.name}" was deleted successfully.`);
                 },
                 onError: (errors) => {
                     const message =
                         (errors?.message as string | undefined) ??
-                        'Terjadi kesalahan saat menghapus user. Silakan coba lagi.';
+                        'An error occurred while deleting user. Please try again.';
 
                     setActionError(message);
                     toast.error(message);
@@ -154,13 +154,13 @@ export function useUsersBulkDelete(onAfterDelete: () => void): UseUsersBulkDelet
                 });
 
                 onAfterDelete();
-                toast.success(`${usersToDelete.length} user berhasil dihapus.`);
+                toast.success(`${usersToDelete.length} users were deleted successfully.`);
             } catch (error) {
                 console.error('Error bulk deleting users:', error);
 
                 const message =
                     (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
-                    'Terjadi kesalahan saat menghapus beberapa user. Silakan coba lagi.';
+                    'An error occurred while deleting multiple users. Please try again.';
 
                 toast.error(message);
             } finally {

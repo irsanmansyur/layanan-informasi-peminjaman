@@ -22,7 +22,6 @@ class UsersController extends Controller
         private readonly UserDataTableService $userDataTableService,
         private readonly UserService $userService,
     ) {
-        $this->middleware(['auth', 'verified']);
         $this->middleware('can:users.read')->only(['index', 'fetchData']);
         $this->middleware('can:users.create')->only('store');
         $this->middleware('can:users.update')->only('update');

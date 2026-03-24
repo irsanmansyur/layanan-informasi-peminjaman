@@ -61,8 +61,8 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
     };
 
     return (
-        <div className="mt-4">
-            <div className="flex flex-col justify-between gap-4 lg:flex-row">
+        <div className="rounded-xl p-3">
+            <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
                 {/* Left: Showing results text */}
                 <div className="flex items-center text-sm text-muted-foreground">
                     Showing {(data.current_page - 1) * data.per_page + 1} to {Math.min(data.current_page * data.per_page, data.total)} of {data.total}{' '}
@@ -70,12 +70,12 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
                 </div>
 
                 {/* Right: Pagination controls */}
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-end">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-end">
                     {/* Page Size */}
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground whitespace-nowrap">Rows per page</span>
                         <Select value={params.limit.toString()} onValueChange={onPageSizeChange}>
-                            <SelectTrigger className="w-16 h-8">
+                            <SelectTrigger className="h-8 w-16">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent align="center">
@@ -89,7 +89,7 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
                     </div>
 
                     {/* Current Page Text */}
-                    <div className="flex flex-col items-start justify-between gap-3 overflow-hidden overflow-x-auto md:flex-row md:items-center">
+                    <div className="flex flex-col items-start justify-between gap-3 overflow-hidden md:flex-row md:items-center">
                         <span className="text-sm text-muted-foreground whitespace-nowrap">
                             Page {data.current_page} of {data.last_page}
                         </span>
@@ -104,18 +104,18 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
                                             size="icon"
                                             onClick={() => onPageChange(current_page - 1)}
                                             disabled={current_page === 1}
-                                            className="w-8 h-8 cursor-pointer"
+                                            className="h-8 w-8 cursor-pointer"
                                         >
-                                            <ChevronLeft className="w-4 h-4" />
+                                            <ChevronLeft className="h-4 w-4" />
                                         </Button>
                                     </PaginationItem>
 
                                     {/* Page Numbers */}
                                     {pages.map((page, index) => (
-                                        <PaginationItem key={index} className="my-4">
+                                        <PaginationItem key={index}>
                                             {page === 'ellipsis' ? (
                                                 showPaginationInput ? (
-                                                    <div className="relative w-12">
+                                                    <div className="relative w-12 my-2">
                                                         <Input
                                                             ref={inputRef}
                                                             type="text"
@@ -125,14 +125,14 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
                                                             onChange={(e) => setPaginationInput(parseNumberInput(e.target.value))}
                                                             onKeyDown={handlePaginationInput}
                                                             onBlur={() => setShowPaginationInput(false)}
-                                                            className="w-12 h-8 px-2 text-center"
+                                                            className="h-8 w-12 px-2 text-center"
                                                             autoFocus
                                                         />
                                                     </div>
                                                 ) : (
                                                     <Button
                                                         variant="ghost"
-                                                        className="w-8 h-8 p-0 cursor-pointer"
+                                                        className="h-8 w-8 cursor-pointer p-0"
                                                         onClick={() => {
                                                             setShowPaginationInput(true);
                                                             setPaginationInput('');
@@ -148,7 +148,7 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
                                                 <PaginationLink
                                                     onClick={() => onPageChange(page)}
                                                     isActive={page === current_page}
-                                                    className="h-8 p-0 cursor-pointer min-w-8"
+                                                    className="min-w-8 h-8 cursor-pointer p-0 data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:hover:bg-primary/90"
                                                 >
                                                     {page}
                                                 </PaginationLink>
@@ -162,9 +162,9 @@ export function TablePagination<T>({ data, pageSizeOptions, params, onPageChange
                                             size="icon"
                                             onClick={() => onPageChange(current_page + 1)}
                                             disabled={current_page === last_page}
-                                            className="w-8 h-8"
+                                            className="h-8 w-8 cursor-pointer"
                                         >
-                                            <ChevronRight className="w-4 h-4" />
+                                            <ChevronRight className="h-4 w-4" />
                                         </Button>
                                     </PaginationItem>
                                 </PaginationContent>

@@ -57,10 +57,10 @@ export function PermissionFormDialog({
 
     const isEdit = mode === 'edit';
 
-    const dialogTitle = isEdit ? 'Edit permission' : 'Tambah permission';
+    const dialogTitle = isEdit ? 'Edit permission' : 'Create permission';
     const dialogDescription = isEdit
-        ? 'Perbarui nama, group, atau guard dari permission.'
-        : 'Buat permission baru untuk mengatur akses fitur aplikasi.';
+        ? 'Update the permission name, group, or guard.'
+        : 'Create a new permission to control feature access.';
 
     useEffect(() => {
         if (!isEdit || !open) {
@@ -155,8 +155,8 @@ export function PermissionFormDialog({
                     }}
                     onSuccess={() => {
                         const successMessage = isEdit
-                            ? `Permission "${formState.name}" berhasil diperbarui.`
-                            : `Permission "${formState.name}" berhasil dibuat.`;
+                            ? `Permission "${formState.name}" was updated successfully.`
+                            : `Permission "${formState.name}" was created successfully.`;
 
                         toast.success(successMessage);
 
@@ -180,7 +180,7 @@ export function PermissionFormDialog({
                         setErrors(nextErrors);
 
                         toast.error(
-                            'Gagal menyimpan permission. Silakan periksa kembali data yang diisi.',
+                            'Failed to save permission. Please review the form input.',
                         );
                     }}
                     transform={(data: Record<string, unknown>) => ({
@@ -256,7 +256,7 @@ export function PermissionFormDialog({
                                     }
                                 >
                                     <SelectTrigger id="guard_name" name="guard_name">
-                                        <SelectValue placeholder="Pilih guard" />
+                                        <SelectValue placeholder="Select guard" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="web">web</SelectItem>
@@ -275,11 +275,11 @@ export function PermissionFormDialog({
                             onClick={() => setOpen(false)}
                             disabled={submitting || isLoading}
                         >
-                            Batal
+                            Cancel
                         </Button>
                         <Button type="submit" disabled={!canSubmit || isLoading}>
                             {submitting && <Spinner className="mr-2 size-4" />}
-                            {isEdit ? 'Simpan perubahan' : 'Buat permission'}
+                            {isEdit ? 'Save changes' : 'Create permission'}
                         </Button>
                     </DialogFooter>
                 </Form>
