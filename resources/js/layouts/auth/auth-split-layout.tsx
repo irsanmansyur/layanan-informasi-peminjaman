@@ -73,7 +73,7 @@ export default function AuthSplitLayout({
                         </div>
 
                         <p className="relative z-10 text-xs text-muted-foreground">
-                            Customize branding and copy for your product.
+                            Customize branding and copy for your application.
                         </p>
                     </aside>
 

@@ -1,8 +1,10 @@
 import { Link, usePage } from '@inertiajs/react';
+import { Github, HandHeart } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -52,6 +54,47 @@ export function AppSidebar() {
                     <NavMain key={group.title} group={group} />
                 ))}
             </SidebarContent>
+
+            <SidebarFooter className="border-t border-sidebar-border/60 px-2 py-2 group-data-[collapsible=icon]:px-1">
+                <SidebarMenu className="group-data-[collapsible=icon]:items-center">
+                    <SidebarMenuItem className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                        <SidebarMenuButton
+                            asChild
+                            size="default"
+                            tooltip={{ children: 'GitHub Repository' }}
+                            className="group-data-[collapsible=icon]:mx-auto"
+                        >
+                            <a
+                                href="https://github.com/yudhaharsanto/laravel-inertia"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                className="flex min-w-0 items-center gap-2"
+                            >
+                                <Github className="size-4" />
+                                <span className="truncate font-medium">Repository</span>
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+                        <SidebarMenuButton
+                            asChild
+                            size="default"
+                            tooltip={{ children: 'Donate via Saweria' }}
+                            className="group-data-[collapsible=icon]:mx-auto"
+                        >
+                            <a
+                                href="https://saweria.co/yudhaharsanto"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                className="flex min-w-0 items-center gap-2"
+                            >
+                                <HandHeart className="size-4 text-primary" />
+                                <span className="truncate font-medium">Donate</span>
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
 
             <SidebarRail />
         </Sidebar>

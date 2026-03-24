@@ -2,6 +2,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import {
     Activity,
     ArrowRight,
+    Github,
     LayoutDashboard,
     Shield,
     Sparkles,
@@ -57,6 +58,8 @@ const stack = [
     'shadcn/ui',
 ] as const;
 
+const REPO_URL = 'https://github.com/yudhaharsanto/laravel-inertia';
+
 export default function Welcome({
     canRegister = true,
 }: {
@@ -73,7 +76,7 @@ export default function Welcome({
                     rel="stylesheet"
                 />
             </Head>
-            <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+            <div className="relative h-svh overflow-x-hidden overflow-y-auto bg-background text-foreground">
                 <div
                     aria-hidden
                     className="pointer-events-none fixed inset-0 overflow-hidden"
@@ -91,8 +94,8 @@ export default function Welcome({
                     />
                 </div>
 
-                <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-                    <header className="mb-12 flex flex-wrap items-center justify-between gap-4">
+                <div className="relative z-10 mx-auto flex min-h-full max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+                    <header className="sticky top-0 z-30 -mx-4 mb-12 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 bg-background/80 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
                         <div className="flex items-center gap-2">
                             <div className="flex size-9 items-center justify-center rounded-lg border bg-card shadow-sm">
                                 <Zap className="size-4 text-primary" />
@@ -102,6 +105,12 @@ export default function Welcome({
                             </span>
                         </div>
                         <nav className="flex flex-wrap items-center gap-2 sm:gap-3">
+                            <Button variant="outline" asChild>
+                                <a href={REPO_URL} target="_blank" rel="noreferrer noopener">
+                                    <Github className="size-4" />
+                                    Repository
+                                </a>
+                            </Button>
                             {auth.user ? (
                                 <Button asChild>
                                     <Link href={dashboard()}>
@@ -151,6 +160,12 @@ export default function Welcome({
                                     that is commonly used in internal and SaaS applications.
                                 </p>
                                 <div className="flex flex-wrap gap-3">
+                                    <Button size="lg" variant="outline" asChild>
+                                        <a href={REPO_URL} target="_blank" rel="noreferrer noopener">
+                                            <Github className="size-4" />
+                                            View repository
+                                        </a>
+                                    </Button>
                                     {auth.user ? (
                                         <Button size="lg" asChild>
                                             <Link href={dashboard()}>
