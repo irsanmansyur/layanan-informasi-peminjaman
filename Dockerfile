@@ -69,13 +69,13 @@ RUN composer dump-autoload \
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
-# 5. Build client + SSR bundle.
+# 5. Build client bundle (SSR dinonaktifkan di config/inertia.php).
 #    A throwaway .env is created just long enough for the Wayfinder plugin to
 #    boot `php artisan` — everything is done in a single layer so the temp
 #    .env never appears in `docker history` and can't shadow the real one.
 RUN cp .env.example .env \
     && php artisan key:generate --no-interaction --ansi \
-    && bun run build:ssr \
+    && bun run build \
     && rm -f .env
 
 
@@ -85,14 +85,14 @@ RUN cp .env.example .env \
 FROM dunglas/frankenphp:1-php8.4-bookworm AS runtime
 
 # hadolint ignore=DL3008,DL3015
+# Node.js TIDAK diinstal di runtime karena Inertia SSR dinonaktifkan.
+# Kalau SSR diaktifkan kembali, tambahkan blok nodesource seperti di
+# stage frontend-builder.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         ca-certificates \
         supervisor \
-        gnupg \
         dumb-init \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y --no-install-recommends nodejs \
     && install-php-extensions \
         pdo_sqlite \
         intl \

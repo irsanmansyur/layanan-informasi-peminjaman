@@ -11,9 +11,8 @@ Panduan deploy aplikasi ini ke VPS menggunakan FrankenPHP dalam container Docker
 │  Reverse proxy (TLS)    │ HTTPS  │  FrankenPHP container :8000  │
 │  Traefik / Nginx / CF   ├───────▶│  ├─ Caddy/FrankenPHP (web)   │
 │  (terminates HTTPS)     │  HTTP  │  ├─ queue:work               │
-│                         │        │  ├─ schedule:work            │
-└─────────────────────────┘        │  └─ inertia:start-ssr        │
-                                    │                              │
+│                         │        │  └─ schedule:work            │
+└─────────────────────────┘        │                              │
                                     │  Volume: app-storage         │
                                     │   └─ storage/app/database/   │
                                     │      └─ database.sqlite      │
@@ -22,7 +21,8 @@ Panduan deploy aplikasi ini ke VPS menggunakan FrankenPHP dalam container Docker
 
 - Container expose port **8000** (HTTP) di jaringan docker internal.
 - TLS dihandle upstream — setting `auto_https off` di Caddyfile.
-- Container menjalankan 4 proses via supervisord.
+- Container menjalankan **3 proses** via supervisord (FrankenPHP, queue, scheduler).
+- **Inertia SSR dinonaktifkan** (`config/inertia.php` → `ssr.enabled = false`). Rendering dilakukan di browser. Untuk mengaktifkan kembali, lihat catatan di `docker/supervisord.conf`.
 - Data persisten di named volume `app-storage` dan `app-bootstrap-cache`.
 
 ---
@@ -90,7 +90,7 @@ Entrypoint akan otomatis:
 2. Menjalankan `php artisan migrate --force`.
 3. Membuat symlink `public/storage`.
 4. Caching config/route/view.
-5. Menyalakan supervisord → FrankenPHP + queue + scheduler + SSR.
+5. Menyalakan supervisord → FrankenPHP + queue + scheduler.
 
 Verifikasi:
 
@@ -226,8 +226,7 @@ docker run --rm \
 | `500` tapi log kosong                        | `APP_KEY` belum diisi atau `storage/` tidak writable. Cek `docker compose logs app`.                     |
 | Redirect loop HTTPS                          | `SESSION_SECURE_COOKIE=true` sementara akses via HTTP, **atau** `TRUSTED_PROXIES` tidak terbaca. Cek bahwa `bootstrap/app.php` memanggil `trustProxies()` (sudah disertakan). |
 | URL image dari Storage salah (pakai http:…)  | `APP_URL` belum di-set ke domain HTTPS Anda. Edit `.env.production` → `docker compose up -d`.            |
-| Asset Vite 404                               | Stage `node-builder` gagal. Jalankan `docker compose build --no-cache app`.                              |
-| SSR error                                    | Cek `docker compose logs app | grep inertia-ssr`. Pastikan `bootstrap/ssr/ssr.js` ada (build SSR sukses). |
+| Asset Vite 404                               | Stage `frontend-builder` gagal. Jalankan `docker compose build --no-cache app`.                          |
 | Migration error pertama boot                 | Cek `docker compose logs app` bagian `[entrypoint]`. SQLite file permission harus `www-data:www-data`.    |
 
 ---
