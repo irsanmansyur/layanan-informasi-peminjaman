@@ -35,10 +35,15 @@ services:
     #   - '127.0.0.1:8000:8000'
 
     volumes:
-      # Persistent app storage (uploads, sessions, logs, SQLite file)
-      - app-storage:/app/storage
-      # Persistent framework cache (optional — survives restarts)
-      - app-bootstrap-cache:/app/bootstrap/cache
+      # Persistent app storage (uploads, sessions, logs, SQLite file).
+      # Pakai BIND MOUNT ke folder ./data/storage di host supaya:
+      #   1. Data terlihat jelas di filesystem host (mudah dibackup / inspect).
+      #   2. TIDAK hilang walau `docker compose down -v` (karena bukan named volume).
+      #   3. Tidak bergantung ke nama project compose (pindah folder aman).
+      # Folder ini di-.gitignore. Owner akan di-fix ke www-data oleh entrypoint.
+      - ./data/storage:/app/storage
+      # Persistent framework cache (opsional — isinya regenerable).
+      - ./data/bootstrap-cache:/app/bootstrap/cache
 
     # Join the external reverse-proxy network if it exists.
     # Change `proxy` to your actual external network name or remove this block.
@@ -52,10 +57,6 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 3
-
-volumes:
-  app-storage:
-  app-bootstrap-cache:
 
 # Uncomment and pre-create this network if your reverse proxy lives outside:
 #   docker network create proxy

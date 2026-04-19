@@ -19,6 +19,9 @@ public/storage
 bootstrap/ssr
 bootstrap/cache/*.php
 
+# Host-side persistent data (bind-mounted at runtime, not needed in image)
+data
+
 # Dev databases & data
 database/database.sqlite
 database/database.sqlite-*

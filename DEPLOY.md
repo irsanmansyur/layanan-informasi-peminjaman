@@ -23,7 +23,9 @@ Panduan deploy aplikasi ini ke VPS menggunakan FrankenPHP dalam container Docker
 - TLS dihandle upstream — setting `auto_https off` di Caddyfile.
 - Container menjalankan **4 proses** via supervisord (FrankenPHP, queue, scheduler, Inertia SSR).
 - **Inertia SSR aktif** (`config/inertia.php` → `ssr.enabled = true`). Node.js 22 terpasang di image runtime, dan `php artisan inertia:start-ssr` menjalankan `node bootstrap/ssr/ssr.js` di port `13714` (override lewat env `INERTIA_SSR_URL` jika perlu). Untuk menonaktifkan, ubah `ssr.enabled` ke `false`, ganti `bun run build:ssr` menjadi `bun run build` di `Dockerfile`, dan hapus program `inertia-ssr` di `docker/supervisord.conf`.
-- Data persisten di named volume `app-storage` dan `app-bootstrap-cache`.
+- Data persisten di **bind mount** ke folder `./data/storage` dan `./data/bootstrap-cache` di host (tidak lagi named volume). Alasan: data terlihat jelas di filesystem host, mudah dibackup, dan tidak hilang kalau jalankan `docker compose down -v`.
+- **Tip**: buat folder host duluan sebagai user biasa (`mkdir -p data/storage data/bootstrap-cache`) sebelum `docker compose up -d`. Kalau tidak, Docker yang bikin folder dan owner-nya jadi `root:root` di host — backup lewat `tar` harus pakai `sudo`.
+- **SELinux host (RHEL/Fedora/CentOS/Rocky):** tambahkan suffix `:Z` pada bind mount (`./data/storage:/app/storage:Z`) supaya tidak kena permission denied. Host Ubuntu/Debian tidak perlu.
 
 ---
 
@@ -193,28 +195,66 @@ Migration baru dijalankan otomatis oleh entrypoint.
 
 ---
 
-## 8. Backup SQLite
+## 8. Backup SQLite & storage
 
-Karena database hanya 1 file di volume, backup cukup copy file:
+Karena sekarang pakai **bind mount** (`./data/storage`), backup cukup tar folder di host:
 
 ```bash
-# Cadangkan (konsisten, via SQLite .backup yang aman saat DB sedang dipakai)
-docker compose exec app sqlite3 \
-    /app/storage/app/database/database.sqlite \
-    ".backup /tmp/backup.sqlite"
-docker compose cp app:/tmp/backup.sqlite ./backup-$(date +%F).sqlite
-docker compose exec app rm /tmp/backup.sqlite
+# Backup seluruh storage (uploads + SQLite + logs + sessions)
+tar czf backup-$(date +%F).tgz -C /opt/laravel-inertia/data storage
+
+# Atau khusus SQLite (lebih kecil)
+cp /opt/laravel-inertia/data/storage/app/database/database.sqlite \
+   backup-$(date +%F).sqlite
 ```
 
-> Catatan: image tidak menyertakan binary `sqlite3` secara default. Bila perlu, tambahkan `sqlite3` ke daftar apt di `Dockerfile`, atau cukup copy file langsung saat container berhenti sebentar.
-
-Atau backup seluruh volume:
+Untuk backup SQLite yang **konsisten saat DB sedang dipakai** (aman dari partial write), pakai `.backup`:
 
 ```bash
+docker compose exec kios95_home sqlite3 \
+    /app/storage/app/database/database.sqlite \
+    ".backup /app/storage/app/database/backup.sqlite"
+# Hasilnya langsung muncul di host: ./data/storage/app/database/backup.sqlite
+```
+
+> Catatan: image tidak menyertakan binary `sqlite3` secara default. Tambahkan `sqlite3` ke daftar apt di `Dockerfile` kalau perlu. Alternatif paling aman: stop container sebentar lalu copy file (`docker compose stop app && cp ... && docker compose start app`).
+
+### Migrasi dari named volume lama (`app-storage`)
+
+Kalau sebelumnya sudah pakai named volume dan ingin migrasi data ke bind mount:
+
+```bash
+cd /opt/laravel-inertia
+
+# 1. Matikan stack (JANGAN pakai -v, nanti data hilang!)
+docker compose down
+
+# 2. Buat folder host
+mkdir -p data/storage data/bootstrap-cache
+
+# 3. Cek nama volume aktual (prefix = nama folder project).
+#    Contoh outputnya: laravel-inertia_app-storage  atau  myproject_app-storage
+docker volume ls | grep app-storage
+
+# 4. Copy isi volume lama ke folder host (ganti prefix sesuai output di atas)
+STORAGE_VOL=laravel-inertia_app-storage
+CACHE_VOL=laravel-inertia_app-bootstrap-cache
+
 docker run --rm \
-    -v laravel-inertia_app-storage:/data \
-    -v "$PWD":/out \
-    alpine tar czf /out/storage-$(date +%F).tgz -C /data .
+    -v "$STORAGE_VOL":/from \
+    -v "$PWD/data/storage":/to \
+    alpine sh -c 'cp -a /from/. /to/'
+
+docker run --rm \
+    -v "$CACHE_VOL":/from \
+    -v "$PWD/data/bootstrap-cache":/to \
+    alpine sh -c 'cp -a /from/. /to/'
+
+# 5. Start ulang — entrypoint otomatis chown ke www-data
+docker compose up -d
+
+# 6. Verifikasi gambar & DB masih ada, lalu hapus volume lama
+docker volume rm "$STORAGE_VOL" "$CACHE_VOL"
 ```
 
 ---

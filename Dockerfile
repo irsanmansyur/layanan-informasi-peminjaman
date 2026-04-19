@@ -144,6 +144,12 @@ RUN mkdir -p \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R ug+rwX /app/storage /app/bootstrap/cache
 
+# Declare persistent mount points. Docker compose akan override ke bind mount
+# ./data/storage dan ./data/bootstrap-cache (lihat docker-compose.yml). Deklarasi
+# VOLUME di sini sifatnya dokumentatif + safety net kalau image dipakai via
+# `docker run` tanpa flag -v (biar data tidak hilang di layer ephemeral).
+VOLUME ["/app/storage", "/app/bootstrap/cache"]
+
 # Port FrankenPHP listens on (matches SERVER_NAME and Caddyfile)
 EXPOSE 8000
 
