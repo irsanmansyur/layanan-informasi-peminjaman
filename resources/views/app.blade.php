@@ -47,7 +47,12 @@
         rel="stylesheet">
 
     @viteReactRefresh
-    @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
+    {{-- Page components dimuat lewat `import.meta.glob` di resources/js/app.tsx.
+         Jangan tambahkan "resources/js/pages/{$page['component']}.tsx" di sini:
+         file tersebut bukan entry (`isDynamicEntry` di manifest), sehingga
+         `@vite` akan melempar ViteException di production dan halaman jadi
+         blank putih saat di-refresh. --}}
+    @vite(['resources/js/app.tsx'])
     @inertiaHead
 </head>
 
