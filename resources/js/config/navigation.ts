@@ -1,6 +1,8 @@
-import {  FolderTree, LayoutGrid } from 'lucide-react';
+import { FolderTree, HandCoins, LayoutGrid, Megaphone } from 'lucide-react';
 import { dashboard } from '@/routes';
 import activityLogs from '@/routes/activity-logs';
+import borrowers from '@/routes/borrowers';
+import informations from '@/routes/informations';
 import permissions from '@/routes/permissions';
 import roles from '@/routes/roles';
 import users from '@/routes/users';
@@ -54,6 +56,18 @@ export const mainNavItems: MainNavGroup[] = [
                         requiredPermissions: ['activity-logs.read'],
                     },
                 ],
+            },
+            {
+                title: 'Peminjam',
+                href: borrowers.index(),
+                icon: HandCoins,
+                requiredPermissions: ['borrowers.read'],
+            },
+            {
+                title: 'Informasi',
+                href: informations.index(),
+                icon: Megaphone,
+                requiredPermissions: ['informations.read'],
             },
         ],
     },

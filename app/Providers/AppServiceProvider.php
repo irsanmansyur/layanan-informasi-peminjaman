@@ -2,16 +2,22 @@
 
 namespace App\Providers;
 
+use App\Models\Borrower;
+use App\Models\Information;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Observers\GlobalActivityObserver;
 use App\Policies\ActivityPolicy;
 use App\Repositories\Contracts\ActivityLogRepositoryInterface;
+use App\Repositories\Contracts\BorrowerRepositoryInterface;
+use App\Repositories\Contracts\InformationRepositoryInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\ActivityLogRepository;
+use App\Repositories\Eloquent\BorrowerRepository;
+use App\Repositories\Eloquent\InformationRepository;
 use App\Repositories\Eloquent\PermissionRepository;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
@@ -37,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->singleton(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->singleton(ActivityLogRepositoryInterface::class, ActivityLogRepository::class);
+        $this->app->singleton(BorrowerRepositoryInterface::class, BorrowerRepository::class);
+        $this->app->singleton(InformationRepositoryInterface::class, InformationRepository::class);
     }
 
     /**
@@ -102,5 +110,7 @@ class AppServiceProvider extends ServiceProvider
         User::observe(GlobalActivityObserver::class);
         Role::observe(GlobalActivityObserver::class);
         Permission::observe(GlobalActivityObserver::class);
+        Borrower::observe(GlobalActivityObserver::class);
+        Information::observe(GlobalActivityObserver::class);
     }
 }

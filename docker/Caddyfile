@@ -1,0 +1,48 @@
+# FrankenPHP Caddyfile — runs BEHIND an external reverse proxy
+# (Traefik / Nginx / Cloudflare tunnel). TLS is terminated upstream.
+
+{
+    # Disable Caddy's automatic TLS — upstream proxy handles it
+    auto_https off
+
+    # Trust forwarding headers from private networks (docker/LAN)
+    servers {
+        trusted_proxies static private_ranges
+    }
+
+    # Access logs to stdout so `docker logs` captures them
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+}
+
+# Matches SERVER_NAME=:8000 env var
+:8000 {
+    root * /app/public
+
+    encode zstd gzip
+
+    # Serve precompressed Vite assets if available
+    file_server
+
+    # Long cache for hashed Vite build artifacts
+    @vite path /build/*
+    header @vite Cache-Control "public, max-age=31536000, immutable"
+
+    # No cache for the Laravel entry point
+    @php path *.php
+    header @php Cache-Control "no-store, no-cache, must-revalidate"
+
+    # PHP handler (uses index.php by default)
+    php_server {
+        try_files {path} {path}/ /index.php?{query}
+    }
+
+    # Log requests (stdout)
+    log {
+        output stdout
+        format json
+    }
+}

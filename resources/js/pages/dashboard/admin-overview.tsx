@@ -5,6 +5,7 @@ import roles from '@/routes/roles';
 import users from '@/routes/users';
 import type { DashboardAdminStats } from '@/types/dashboard';
 import { AdminActivityChart } from './admin-activity-chart';
+import { MarqueeSpeedControl } from './marquee-speed-control';
 import { StatCard } from './stat-card';
 
 type AdminOverviewProps = {
@@ -65,6 +66,8 @@ export function AdminOverview({ stats }: AdminOverviewProps) {
                 data={stats.activity_trend}
                 totalLast7Days={stats.activity_logs_last_7_days}
             />
+
+            <MarqueeSpeedControl currentSpeed={stats.marquee_speed} />
         </div>
     );
 }

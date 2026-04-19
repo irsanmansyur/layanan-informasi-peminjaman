@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('borrowers', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->decimal('total', 15, 2)->default(0);
+            $table->string('status')->default('belum lunas');
+            $table->date('borrowed_at');
+            $table->date('paid_off_at')->nullable();
+            $table->timestamps();
+
+            $table->index('status');
+            $table->index('name');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('borrowers');
+    }
+};

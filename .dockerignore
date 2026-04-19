@@ -1,0 +1,53 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+.github
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Dependencies & build artifacts (rebuilt inside the image)
+node_modules
+vendor
+public/build
+public/hot
+public/storage
+bootstrap/ssr
+bootstrap/cache/*.php
+
+# Dev databases & data
+database/database.sqlite
+database/database.sqlite-*
+storage/app/public/*
+!storage/app/public/.gitignore
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+storage/app/database/*
+
+# Editor / OS
+.idea
+.vscode
+.DS_Store
+*.swp
+*.log
+
+# Tests & CI
+tests/_output
+coverage
+.phpunit.result.cache
+phpunit.xml.bak
+
+# Docs only used by humans
+README.md
+DEPLOY.md
+*.md
+!docker/README.md
+
+# Docker itself shouldn't recurse
+docker-compose.override.yml

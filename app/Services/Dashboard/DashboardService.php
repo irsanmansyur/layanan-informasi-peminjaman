@@ -5,6 +5,7 @@ namespace App\Services\Dashboard;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\HomeSettings;
 use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Models\Activity;
 
@@ -22,7 +23,8 @@ class DashboardService
      *         roles_count: int,
      *         permissions_count: int,
      *         activity_logs_last_7_days: int,
-     *         activity_trend: list<array{date: string, label: string, count: int}>
+     *         activity_trend: list<array{date: string, label: string, count: int}>,
+     *         marquee_speed: string
      *     }
      * }
      */
@@ -55,7 +57,8 @@ class DashboardService
      *     roles_count: int,
      *     permissions_count: int,
      *     activity_logs_last_7_days: int,
-     *     activity_trend: list<array{date: string, label: string, count: int}>
+     *     activity_trend: list<array{date: string, label: string, count: int}>,
+     *     marquee_speed: string
      * }
      */
     private function adminOverview(): array
@@ -70,6 +73,7 @@ class DashboardService
                 ->where('created_at', '>=', $since)
                 ->count(),
             'activity_trend' => $this->buildActivityTrendLast7Days(),
+            'marquee_speed' => HomeSettings::currentMarqueeSpeed(),
         ];
     }
 

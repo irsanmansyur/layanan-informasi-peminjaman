@@ -1,0 +1,64 @@
+# -----------------------------------------------------------------------------
+# Production docker-compose for Laravel + FrankenPHP (SQLite + queue/cache DB).
+# Runs BEHIND an external reverse proxy (Traefik / Nginx / Cloudflare tunnel).
+# -----------------------------------------------------------------------------
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: ${APP_IMAGE:-laravel-inertia:latest}
+    container_name: laravel-inertia-app
+    restart: unless-stopped
+
+    # Load env from .env.production on the host
+    env_file:
+      - .env.production
+
+    environment:
+      # Force SQLite path into the persisted volume
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /app/storage/app/database/database.sqlite
+      # Let entrypoint know it's safe to run migrations
+      RUN_MIGRATIONS: "true"
+
+    # Expose FrankenPHP HTTP port on the Docker network ONLY.
+    # The external reverse proxy (on the same host or a shared network)
+    # forwards traffic to this port. Do NOT publish to 0.0.0.0 in production.
+    expose:
+      - "8000"
+
+    # If your reverse proxy is on the host (not in docker), uncomment:
+    # ports:
+    #   - "127.0.0.1:8000:8000"
+
+    volumes:
+      # Persistent app storage (uploads, sessions, logs, SQLite file)
+      - app-storage:/app/storage
+      # Persistent framework cache (optional — survives restarts)
+      - app-bootstrap-cache:/app/bootstrap/cache
+
+    # Join the external reverse-proxy network if it exists.
+    # Change `proxy` to your actual external network name or remove this block.
+    networks:
+      - default
+      # - proxy
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/up"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  app-storage:
+  app-bootstrap-cache:
+
+# Uncomment and pre-create this network if your reverse proxy lives outside:
+#   docker network create proxy
+# networks:
+#   proxy:
+#     external: true
