@@ -21,7 +21,16 @@ export type UseCurrentUrlReturn = {
 
 export function useCurrentUrl(): UseCurrentUrlReturn {
     const page = usePage();
-    const currentUrlPath = new URL(page.url, window?.location.origin).pathname;
+    // `window` is not defined during Inertia SSR (Node). Optional chaining on
+    // `window?.location` does NOT help — referencing an undeclared identifier
+    // throws ReferenceError before the optional chain runs. Fall back to a
+    // dummy origin; `page.url` from Inertia is always path-relative so the
+    // origin is only used to satisfy the URL parser.
+    const origin =
+        typeof window !== 'undefined'
+            ? window.location.origin
+            : 'http://localhost';
+    const currentUrlPath = new URL(page.url, origin).pathname;
 
     const isCurrentUrl: IsCurrentUrlFn = (
         urlToCheck: NonNullable<InertiaLinkProps['href']>,
