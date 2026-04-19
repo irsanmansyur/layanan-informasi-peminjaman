@@ -4,13 +4,13 @@
 # -----------------------------------------------------------------------------
 
 services:
-  app:
+  kios95_home:
     build:
       context: .
       dockerfile: Dockerfile
       target: runtime
     image: ${APP_IMAGE:-laravel-inertia:latest}
-    container_name: laravel-inertia-app
+    container_name: kios95_home
     restart: unless-stopped
 
     # Load env from .env.production on the host
@@ -31,8 +31,8 @@ services:
       - '8000'
 
     # If your reverse proxy is on the host (not in docker), uncomment:
-    ports:
-      - '127.0.0.1:8000:8000'
+    # ports:
+    #   - '127.0.0.1:8000:8000'
 
     volumes:
       # Persistent app storage (uploads, sessions, logs, SQLite file)
@@ -43,8 +43,8 @@ services:
     # Join the external reverse-proxy network if it exists.
     # Change `proxy` to your actual external network name or remove this block.
     networks:
-      - default
-      # - proxy
+      npm_overlay_net:
+        ipv4_address: 10.0.1.150
 
     healthcheck:
       test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:8000/up']
@@ -59,6 +59,6 @@ volumes:
 
 # Uncomment and pre-create this network if your reverse proxy lives outside:
 #   docker network create proxy
-# networks:
-#   proxy:
-#     external: true
+networks:
+  npm_overlay_net:
+    external: true
