@@ -21,8 +21,8 @@ Panduan deploy aplikasi ini ke VPS menggunakan FrankenPHP dalam container Docker
 
 - Container expose port **8000** (HTTP) di jaringan docker internal.
 - TLS dihandle upstream — setting `auto_https off` di Caddyfile.
-- Container menjalankan **3 proses** via supervisord (FrankenPHP, queue, scheduler).
-- **Inertia SSR dinonaktifkan** (`config/inertia.php` → `ssr.enabled = false`). Rendering dilakukan di browser. Untuk mengaktifkan kembali, lihat catatan di `docker/supervisord.conf`.
+- Container menjalankan **4 proses** via supervisord (FrankenPHP, queue, scheduler, Inertia SSR).
+- **Inertia SSR aktif** (`config/inertia.php` → `ssr.enabled = true`). Node.js 22 terpasang di image runtime, dan `php artisan inertia:start-ssr` menjalankan `node bootstrap/ssr/ssr.js` di port `13714` (override lewat env `INERTIA_SSR_URL` jika perlu). Untuk menonaktifkan, ubah `ssr.enabled` ke `false`, ganti `bun run build:ssr` menjadi `bun run build` di `Dockerfile`, dan hapus program `inertia-ssr` di `docker/supervisord.conf`.
 - Data persisten di named volume `app-storage` dan `app-bootstrap-cache`.
 
 ---
