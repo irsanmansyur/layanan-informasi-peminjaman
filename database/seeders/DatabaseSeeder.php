@@ -14,10 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seeders yang aman dijalankan di semua environment (tidak memakai faker).
         $this->call([
             PermissionGroupsSeeder::class,
-            InformationSeeder::class,
-            BorrowerSeeder::class,
         ]);
 
         $admin = User::firstOrCreate(
@@ -42,6 +41,18 @@ class DatabaseSeeder extends Seeder
         if ($adminRole !== null) {
             $admin->assignRole($adminRole);
         }
+
+        // Seeder demo di bawah ini memakai faker (fakerphp/faker berada di
+        // require-dev). Hanya dijalankan di luar production supaya image
+        // production (composer install --no-dev) tidak error.
+        if (app()->environment('production')) {
+            return;
+        }
+
+        $this->call([
+            InformationSeeder::class,
+            BorrowerSeeder::class,
+        ]);
 
         if (! User::whereHas('roles', fn ($query) => $query->where('name', 'user'))->exists()) {
             $users = User::factory(5000)->create();

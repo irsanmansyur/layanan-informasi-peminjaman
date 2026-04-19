@@ -30,6 +30,9 @@ RUN composer install \
 # =============================================================================
 FROM dunglas/frankenphp:1-php8.4-bookworm AS frontend-builder
 
+# Composer binary (FrankenPHP image doesn't ship one)
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
 # hadolint ignore=DL3008,DL3015
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \

@@ -1,5 +1,10 @@
 # FrankenPHP Caddyfile — runs BEHIND an external reverse proxy
 # (Traefik / Nginx / Cloudflare tunnel). TLS is terminated upstream.
+#
+# NOTE: `php_server` is the canonical Laravel/Symfony shortcut. It already
+# bundles: rewrite to index.php, try_files, and file_server for static assets.
+# Do NOT add a standalone `file_server` or a `try_files` sub-block — that
+# breaks the default and causes `/` to return 404.
 
 {
     # Disable Caddy's automatic TLS — upstream proxy handles it
@@ -24,21 +29,15 @@
 
     encode zstd gzip
 
-    # Serve precompressed Vite assets if available
-    file_server
-
-    # Long cache for hashed Vite build artifacts
+    # Long cache for hashed Vite build artifacts (immutable filenames)
     @vite path /build/*
     header @vite Cache-Control "public, max-age=31536000, immutable"
 
-    # No cache for the Laravel entry point
-    @php path *.php
-    header @php Cache-Control "no-store, no-cache, must-revalidate"
-
-    # PHP handler (uses index.php by default)
-    php_server {
-        try_files {path} {path}/ /index.php?{query}
-    }
+    # PHP handler — single directive that handles everything Laravel needs:
+    #   - serves static files under /app/public if they exist
+    #   - rewrites missing paths to /index.php
+    #   - executes PHP via the embedded FrankenPHP runtime
+    php_server
 
     # Log requests (stdout)
     log {
