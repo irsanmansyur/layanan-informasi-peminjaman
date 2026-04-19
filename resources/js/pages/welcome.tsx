@@ -39,7 +39,7 @@ export default function Welcome({
                     <div className="absolute -right-1/4 bottom-0 h-[min(70vw,32rem)] w-[min(70vw,32rem)] rounded-full bg-chart-2/20 blur-[90px] dark:bg-chart-2/30" />
                 </div>
 
-                <div className="relative z-10 mx-auto flex min-h-svh max-w-7xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+                <div className="relative z-10 mx-auto flex min-h-svh max-w-full flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
                     <main className="flex flex-1 flex-col gap-4">
                         <section className="flex flex-col gap-4 lg:flex-row lg:items-start">
                             <CoverSection cover={cover} canManage={canManageCover} />
